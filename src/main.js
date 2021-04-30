@@ -2,4 +2,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router).mount('#app')
+import { InstagramOutlined, GithubOutlined } from '@ant-design/icons-vue'
+
+const app = createApp(App)
+
+app.use(router)
+app.component('icon-instagram', InstagramOutlined)
+app.component('icon-github', GithubOutlined)
+app.mount('#app')

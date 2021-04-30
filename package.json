@@ -7,7 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^6.0.1",
     "core-js": "^3.6.5",
+    "style-resources-loader": "^1.4.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0"
   },
