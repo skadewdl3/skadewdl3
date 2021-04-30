@@ -1,17 +1,19 @@
 <template>
-  <div class="navbar">
-    <div class="navbar__left">
-      <div class="navbar__logo">
-        <div class="navbar__logo__icon"><icon-instagram /></div>
-        <div class="navbar__logo__icon"><icon-github /></div>
-        <div class="navbar__logo__text">@skadewdl3</div>
-      </div>
+  <div
+    class="fixed top-0 left-0 w-screen h-4 xl:px-36 lg:px-20 md:px-8 px-4 py-8 flex items-center justify-between"
+  >
+    <div class="flex align-center justify-start text-xl leading-none">
+      <icon-instagram class="mx-2 ml-0" />
+      <icon-github class="mx-2" />
+      <span class="hidden mx-2 mr-0 md:inline-block">@skadewdl3</span>
     </div>
-    <div class="navbar__right">
-      <ul class="navbar__links">
-        <li class="navbar__link">Projects</li>
-        <li class="navbar__link">Skills</li>
-        <li class="navbar__link">Blogs</li>
+    <div class="">
+      <ul
+        class="navbar__links flex align-center justify-end text-xl leading-none"
+      >
+        <li class="navbar__link mx-2 ml-0">Projects</li>
+        <li class="navbar__link mx-2">Skills</li>
+        <li class="navbar__link mx-2 mr-0">Blogs</li>
       </ul>
     </div>
   </div>
@@ -22,38 +24,3 @@ export default {
   name: 'Navbar'
 }
 </script>
-
-<style scoped lang="stylus">
-.navbar
-  position fixed
-  top 0
-  left 0
-  width 100%
-  height NAVBAR_HEIGHT
-  padding 1rem 2rem
-  display flex
-  align-items center
-  justify-content space-between
-
-  &__logo
-    display flex
-    align-items center
-    justify-content flex-start
-    font-size 2rem
-    div
-      margin 0 1rem
-      &:first-child
-        margin-left 0
-      &:last-child
-        margin-right 0
-  &__links
-    list-style none
-    display flex
-    align-items center
-    justify-content flex-end
-
-  &__link
-    color TEXT_COLOR
-    padding 1rem 2rem
-    font-size 2rem
-</style>

@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 
 import { InstagramOutlined, GithubOutlined } from '@ant-design/icons-vue'
+import 'tailwindcss/tailwind.css'
 
 const app = createApp(App)
 

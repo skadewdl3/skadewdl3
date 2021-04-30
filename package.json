@@ -2,15 +2,18 @@
   "name": "skadewdl3",
   "version": "0.1.0",
   "private": true,
-  "repository": "https://github.com/skadewdl3/skadewdl3",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.0.1",
+    "@tailwindcss/postcss7-compat": "^2.0.2",
+    "autoprefixer": "^9",
     "core-js": "^3.6.5",
+    "postcss": "^7",
     "style-resources-loader": "^1.4.1",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0"
   },
@@ -20,6 +23,8 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "stylus": "^0.54.7",
-    "stylus-loader": "^3.0.2"
-  }
+    "stylus-loader": "^3.0.2",
+    "vue-cli-plugin-tailwind": "~2.0.6"
+  },
+  "repository": "https://github.com/skadewdl3/skadewdl3"
 }
