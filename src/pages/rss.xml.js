@@ -5,7 +5,7 @@ import { SITE_DESCRIPTION } from '../consts'
 export async function GET(context) {
   const posts = await getCollection('blog')
   return rss({
-    title: "Soham Karandikar's Portfolio",
+    title: "Soham Karandikar's Portfoli",
     description: SITE_DESCRIPTION,
     site: context.site,
     items: posts.map((post) => ({
