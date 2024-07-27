@@ -4,6 +4,23 @@ import BaseHead from '../components/BaseHead.astro';
 import { SITE_DESCRIPTION } from '../consts'
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+
+import { Github } from 'simple-icons-astro'
+
+const projects = [
+  {
+    name: 'Project 1',
+    description: 'Description of project 1',
+    link: '/',
+    technologies: [Github],
+  },
+  {
+    name: 'Project 2',
+    description: 'Description of project 2',
+    link: '/',
+    technologies: [],
+  }
+]
 ---
 
 <html lang="en">
@@ -15,7 +32,25 @@ import Footer from '../components/Footer.astro';
     <main
       class="w-full max-w-screen-md mx-auto my-4 flex flex-col gap-4 justify-center"
     >
-          </main>
+      <div class="grid grid-cols-2 gap-4">
+        {
+        projects.map(({ name, description, link, technologies }) => (
+        <div class="project">
+          <p class="name">{name}</p>
+          <p class="description">{description}</p>
+          <ul>
+            {
+            technologies.map(Technology => (
+              <li><Technology /></li>
+            ))
+            }
+          </ul>
+
+        </div>
+        ))
+        }
+      </div>
+    </main>
     <Footer />
   </body>
 </html>
