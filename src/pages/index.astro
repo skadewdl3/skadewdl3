@@ -16,7 +16,7 @@ document.querySelector('.reach-out-btn')?.addEventListener('click', scrollToFoot
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title="Soham Karandikar - Portfolio" description={SITE_DESCRIPTION} />
+    <BaseHead title="Portfolio | Soham Karandikar" description={SITE_DESCRIPTION} />
   </head>
   <body class="w-full max-w-screen-md mx-auto my-4 dark:bg-neutral-800 dark:text-neutral-300 transition-colors duration-300" >
     <Header title="Portflio" />
@@ -26,21 +26,32 @@ document.querySelector('.reach-out-btn')?.addEventListener('click', scrollToFoot
         <p class="w-full text-justify text-base md:text-lg">
           An aspiring full-stack developer based in Pune, India. I'm currently working on a (pretty shitty 😅) x86_64 OS in Rust, and learning Next.js. 
         </p>
-<p class="w-full text-justify text-base md:text-lg mt-4">I am proficient in TypeScript, Vue.js, Python and C. Check out some of the <a class="text-purple-700 hover:text-purple-400 underline" href="/projects">Projects</a> I've made using them. I'm also a huge fan of the Rust 🦀 programming language. <p class="w-full text-justify text-base md:text-lg mt-4"> I'm always eager to learn and grow, and I'm passionate about all things tech. When I'm not coding, you can find me watching my favorite anime, Oregairu. Feel free to <a class="underline reach-out-btn">reach out to me</a>. Let's connect and create something amazing together!
-</p>
+        <p class="w-full text-justify text-base md:text-lg mt-4">
+          I am proficient in TypeScript, Vue.js, Python and C. Check out some of the 
+          <a class="text-purple-700 hover:text-purple-400 underline" href="/projects">Projects</a>
+          I've made using them. I also write 
+          <a  class="text-purple-700 hover:text-purple-400 underline"  href="/blog">blogs </a> about my coding adventures! 
+          <br />
+         
       </div>
       <div class="w-full flex flex-col justify-center items-center gap-2.5 px-4 lg:px-0 mt-6 aspect-video">
         <img
           src="/Me.jpeg"
           alt="Soham Karandikar"
-          class="w-3/4"
+          class="object-contain"
         />
         <p class="italic text-xs text-gray-600 dark:text-neutral-400">
           A picture me in the scenic beauty of Mulshi, Pune 🌲
         </p>
+        <p class="w-full text-justify text-base md:text-lg mt-4">
+        <br />
+          I'm always eager to learn and grow, and I'm passionate about all things tech. 
+          When I'm not coding, you can find me watching my favorite anime, Oregairu or Doctor Who. Do check them out if you've got the time!
+          <br />
+        </p>
       </div>
-	  <RecentPublications />
-	      </main>
+	      <RecentPublications />
+    </main>
     <Footer />
   </body>
 </html>
