@@ -2,25 +2,32 @@
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { SITE_DESCRIPTION } from "../consts";
 import RecentPublications from "../components/RecentPublications.astro";
 ---
+
+<script>
+const scrollToFooter = () => {
+  document.querySelector(".footer")?.scrollIntoView({ behavior: 'smooth' });
+}
+document.querySelector('.reach-out-btn')?.addEventListener('click', scrollToFooter);
+</script>
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <BaseHead title="Soham Karandikar - Portfolio" description={SITE_DESCRIPTION} />
   </head>
   <body class="w-full max-w-screen-md mx-auto my-4 dark:bg-neutral-800 dark:text-neutral-300 transition-colors duration-300" >
-    <Header />
+    <Header title="Portflio" />
     <main class="flex flex-col justify-center">
       <div class="px-4 md:px-16 flex flex-col gap-4 md:my-10">
-        <h1 class="text-2xl md:text-5xl w-full">🧑‍🚀 Hello, Astronaut!</h1>
+        <h1 class="text-2xl md:text-5xl w-full text-center"> 👋🏻 Hi, I'm Soham!</h1>
         <p class="w-full text-justify text-base md:text-lg">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi officia
-          neque eligendi nulla impedit error, consequuntur aspernatur autem id
-          pariatur tenetur quod.
+          An aspiring full-stack developer based in Pune, India. I'm currently working on a (pretty shitty 😅) x86_64 OS in Rust, and learning Next.js. 
         </p>
+<p class="w-full text-justify text-base md:text-lg mt-4">I am proficient in TypeScript, Vue.js, Python and C. Check out some of the <a class="text-purple-700 hover:text-purple-400 underline" href="/projects">Projects</a> I've made using them. I'm also a huge fan of the Rust 🦀 programming language. <p class="w-full text-justify text-base md:text-lg mt-4"> I'm always eager to learn and grow, and I'm passionate about all things tech. When I'm not coding, you can find me watching my favorite anime, Oregairu. Feel free to <a class="underline reach-out-btn">reach out to me</a>. Let's connect and create something amazing together!
+</p>
       </div>
       <div class="w-full flex flex-col items-center gap-2.5 px-4 lg:px-0 mt-6">
         <img

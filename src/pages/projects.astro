@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_DESCRIPTION } from '../consts'
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<html lang="en">
+  <head>
+    <BaseHead title="Projects" description={SITE_DESCRIPTION} />
+  </head>
+  <body class="w-full  mx-auto my-4 max-w-screen-md dark:bg-neutral-800 dark:text-neutral-300 transition-colors duration-300">
+    <Header title="Projects" />
+    <main
+      class="w-full max-w-screen-md mx-auto my-4 flex flex-col gap-4 justify-center"
+    >
+          </main>
+    <Footer />
+  </body>
+</html>
