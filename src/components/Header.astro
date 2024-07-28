@@ -14,11 +14,7 @@ const links = [
 
 const rightSideLinks = links.filter(({ url: temp }) => temp !== url)
 
-const active = links.find(({ url: temp }) => temp === url) as {
-  name: string
-  url: string
-  icon: string
-}
+const active = links.find(({ url: temp }) => temp === url) || links[0]
 console.log(active)
 ---
 
