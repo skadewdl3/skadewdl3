@@ -1,10 +1,22 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
+import BaseHead from '../components/BaseHead.astro'
 import { SITE_DESCRIPTION } from '../consts'
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
 import { Icon } from 'astro-iconify'
-import { siNuxtdotjs, siTypescript, siMongodb, siMongoose, siFirebase, siGit, siGithub, siThreedotjs, siP5dotjs, siReact, siJavascript } from 'simple-icons'
+import {
+  siNuxtdotjs,
+  siTypescript,
+  siMongodb,
+  siMongoose,
+  siFirebase,
+  siGit,
+  siGithub,
+  siThreedotjs,
+  siP5dotjs,
+  siReact,
+  siJavascript,
+} from 'simple-icons'
 
 console.log(siNuxtdotjs)
 
@@ -13,55 +25,73 @@ const projects = [
     name: 'Nrutyangan',
     description: 'Description of project 1',
     link: 'https://nrutyangan.vercel.app',
-    technologies: [siNuxtdotjs, siTypescript, siMongodb, siMongoose, siFirebase, siGit, siGithub],
-    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fanimweb.png?alt=media&token=f96d5f19-deeb-46cc-98ab-e4c99e7860d9' 
+    technologies: [
+      siNuxtdotjs,
+      siTypescript,
+      siMongodb,
+      siMongoose,
+      siFirebase,
+      siGit,
+      siGithub,
+    ],
+    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fanimweb.png?alt=media&token=f96d5f19-deeb-46cc-98ab-e4c99e7860d9',
   },
   {
     name: 'AnimWeb',
     description: 'Description of project 2',
     link: 'https://animweb.vercel.app',
     technologies: [siNuxtdotjs, siTypescript, siThreedotjs, siP5dotjs, siGit],
-    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fanimweb.png?alt=media&token=f96d5f19-deeb-46cc-98ab-e4c99e7860d9' 
+    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fanimweb.png?alt=media&token=f96d5f19-deeb-46cc-98ab-e4c99e7860d9',
   },
   {
     name: 'Mulyankan',
     description: 'Description of project 2',
     link: 'https://mulyankan.vercel.app',
     technologies: [siReact, siJavascript, siFirebase],
-    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fmulyankan.png?alt=media&token=2eb2e1aa-6b6c-4e84-91ca-bec26ae4e9be' 
-  }
+    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fmulyankan.png?alt=media&token=2eb2e1aa-6b6c-4e84-91ca-bec26ae4e9be',
+  },
 ]
+
+const url = Astro.url
 ---
 
 <html lang="en">
   <head>
-    <BaseHead title="Projects | Soham Karandikar" description={SITE_DESCRIPTION} />
+    <BaseHead
+      title="Projects | Soham Karandikar"
+      description={SITE_DESCRIPTION}
+    />
   </head>
-  <body class="w-full  mx-auto my-4 max-w-screen-md dark:bg-neutral-800 dark:text-neutral-300 transition-colors duration-300">
-    <Header title="Projects" />
+  <body
+    class="mx-auto my-4 w-full max-w-screen-md transition-colors duration-300 dark:bg-neutral-800 dark:text-neutral-300"
+  >
+    <Header url={url} />
     <main
-      class="w-full max-w-screen-md mx-auto my-4 flex flex-col gap-4 justify-center"
+      class="mx-auto my-4 flex w-full max-w-screen-md flex-col justify-center gap-4"
     >
-      <div class="grid place-items-center md:place-items-start md:grid-cols-2 gap-4 md:gap-8 xl:gap-12">
+      <div
+        class="grid place-items-center gap-4 md:grid-cols-2 md:place-items-start md:gap-8 xl:gap-12"
+      >
         {
-        projects.map(({ name, description, link, technologies, img }) => (
-        <a href={link}>
-            <div class="project w-[90%] sm:w-3/5 md:w-full">
-              <img src={img} />
-                <p class="name font-semibold text-lg">{name}</p>
+          projects.map(({ name, description, link, technologies, img }) => (
+            <a href={link}>
+              <div class="project w-[90%] sm:w-3/5 md:w-full">
+                <img src={img} />
+                <p class="name text-lg font-semibold">{name}</p>
                 <p class="description">{description}</p>
                 <ul class="flex items-center gap-x-4">
-                  {
-                    technologies.map(icon => {
-                        return (
-              <li><Icon name={`simple-icons:${icon.slug}`} color={`#${icon.hex}`} class="w-5 h-5" /></li>
-                        )
-                      }
-                    )
-                  }
+                  {technologies.map((icon) => (
+                    <li>
+                      <Icon
+                        name={`simple-icons:${icon.slug}`}
+                        color={`#${icon.hex}`}
+                        class="h-5 w-5"
+                      />
+                    </li>
+                  ))}
                 </ul>
-            </div>
-          </a>
+              </div>
+            </a>
           ))
         }
       </div>

@@ -1,15 +1,10 @@
 ---
 import { Icon } from 'astro-iconify'
 
-import {
-  Astronav,
-  MenuItems,
-  MenuIcon,
-} from "astro-navbar";
-import ThemeIcon from "./ThemeIcon.astro";
+import { Astronav, MenuItems, MenuIcon } from 'astro-navbar'
+import ThemeIcon from './ThemeIcon.astro'
 
-const { title } = Astro.props;
-const url = Astro.request.url.split('/').pop()
+let url = Astro.props.url.pathname as string
 
 const links = [
   { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
@@ -17,40 +12,56 @@ const links = [
   { name: 'Projects', url: '/projects', icon: 'code' },
 ]
 
-const rightSideLinks = links.filter(({ url: temp }) => temp !== `/${url}`);
+const rightSideLinks = links.filter(({ url: temp }) => temp !== url)
 
-const active = links.find(({ url: temp }) => temp === `/${url}`) as { name: string, url: string, icon: string };
+const active = links.find(({ url: temp }) => temp === url) as {
+  name: string
+  url: string
+  icon: string
+}
 console.log(active)
 ---
+
 <script>
-document.querySelector('.header-title')?.addEventListener('click', () => {
-  window.location.reload();
-});
+  document.querySelector('.header-title')?.addEventListener('click', () => {
+    window.location.reload()
+  })
 </script>
 
-<header class="lg:flex py-4 pt-2 px-4 sm:px-6 xl:px-0 md:pt-10 gap-5 mb-10 lg:mb-28 w-full">
+<header
+  class="mb-10 w-full gap-5 px-4 py-4 pt-2 sm:px-6 md:pt-10 lg:mb-28 lg:flex xl:px-0"
+>
   <Astronav>
-    <div class="flex w-full justify-between items-end border-b lg:border-none pb-4 lg:pb-0">
-        <a class="header-title font-semibold text-xl flex gap-2 items-center group">
-          <Icon name={`radix-icons:${active.icon}`}` class="w-5 h-5 group-hover:rotate-[17deg]" />{ title }
-        </a>
-      <div class="lg:hidden flex items-center justify-center gap-4">
-        <MenuIcon class="w-4 h-4 text-gray-800 dark:text-neutral-300" />
-		<ThemeIcon class="w-10" />
+    <div
+      class="flex w-full items-end justify-between border-b pb-4 lg:border-none lg:pb-0"
+    >
+      <a
+        class="header-title group flex items-center gap-2 text-xl font-semibold"
+      >
+        <Icon
+          name={`radix-icons:${active.icon}`}
+          `
+          class="h-5 w-5 group-hover:rotate-[17deg]"
+        />{active.name}
+      </a>
+      <div class="flex items-center justify-center gap-4 lg:hidden">
+        <MenuIcon class="h-4 w-4 text-gray-800 dark:text-neutral-300" />
+        <ThemeIcon class="w-10" />
       </div>
     </div>
     <MenuItems class="hidden lg:flex">
-      <ul class="flex flex-col lg:flex-row lg:gap-5 gap-3 mt-3 lg:mt-0  pb-4 lg:pb-0 border-b border-neutral-400 lg:border-b-0">
-
+      <ul
+        class="mt-3 flex flex-col gap-3 border-b border-neutral-400 pb-4 lg:mt-0 lg:flex-row lg:gap-5 lg:border-b-0 lg:pb-0"
+      >
         {
           rightSideLinks.map(({ name, url }) => (
-        <li class="flex items-center"><a href={url}>{name}</a></li>
+            <li class="flex items-center">
+              <a href={url}>{name}</a>
+            </li>
           ))
         }
-        
 
-
-		  <ThemeIcon class="w-10 hidden lg:flex" />
+        <ThemeIcon class="hidden w-10 lg:flex" />
       </ul>
     </MenuItems>
   </Astronav>

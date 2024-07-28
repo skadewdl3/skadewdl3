@@ -1,20 +1,20 @@
 ---
-import BaseHead from "../../components/BaseHead.astro";
-import Header from "../../components/Header.astro";
-import Footer from "../../components/Footer.astro";
-import { SITE_DESCRIPTION } from "../../consts";
-import { getCollection, type CollectionEntry } from "astro:content";
-import FormattedDate from "../../components/FormattedDate.astro";
-import TagLink from "../../components/TagLink.astro";
+import BaseHead from '../../components/BaseHead.astro'
+import Header from '../../components/Header.astro'
+import Footer from '../../components/Footer.astro'
+import { SITE_DESCRIPTION } from '../../consts'
+import { getCollection, type CollectionEntry } from 'astro:content'
+import FormattedDate from '../../components/FormattedDate.astro'
+import TagLink from '../../components/TagLink.astro'
 
-type Post = CollectionEntry<'blog'>;
+type Post = CollectionEntry<'blog'>
 
-const posts = (await getCollection("blog")).sort(
+const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+)
 
 const postByYear: {
-  [year: number]: Post[];
+  [year: number]: Post[]
 } = {}
 
 posts.forEach((post) => {
@@ -24,6 +24,8 @@ posts.forEach((post) => {
   }
   postByYear[year].push(post)
 })
+
+const url = Astro.url
 ---
 
 <!doctype html>
@@ -31,47 +33,45 @@ posts.forEach((post) => {
   <head>
     <BaseHead title="Blog | Soham Karandikar" description={SITE_DESCRIPTION} />
   </head>
-  <body class="w-full  mx-auto my-4 max-w-screen-md dark:bg-neutral-800 dark:text-neutral-300 transition-colors duration-300">
-    <Header title="Blog" />
+  <body
+    class="mx-auto my-4 w-full max-w-screen-md transition-colors duration-300 dark:bg-neutral-800 dark:text-neutral-300"
+  >
+    <Header url={url} />
     <main
-      class="w-full max-w-screen-md mx-auto my-4 flex flex-col gap-4 justify-center"
+      class="mx-auto my-4 flex w-full max-w-screen-md flex-col justify-center gap-4"
     >
       {
-        Object.keys(postByYear).sort(
-          (a, b) => parseInt(b) - parseInt(a)
-        ).map((year) => (
-          <div class="flex flex-col">
-            <h2 class=" text-black dark:text-white font-bold mb-8">{year}</h2>
-            <div class="flex flex-col gap-4">
-              
-            {
-              postByYear[parseInt(year)].map((post: Post) => (
-                <div class="flex gap-2 justify-between border-b pb-4">
-                  <div class="flex flex-col gap-4">
-                    <FormattedDate date={post.data.pubDate} />
-                    <a class="font-bold text-lg" href={`/blog/${post.slug}`}>
-                      {post.data.title}
-                    </a>
-                    <div class="flex gap-2">
-                      {post.data.tags?.map((i: string) => {
-                        return <TagLink tag={i} />;
-                      })}
+        Object.keys(postByYear)
+          .sort((a, b) => parseInt(b) - parseInt(a))
+          .map((year) => (
+            <div class="flex flex-col">
+              <h2 class="mb-8 font-bold text-black dark:text-white">{year}</h2>
+              <div class="flex flex-col gap-4">
+                {postByYear[parseInt(year)].map((post: Post) => (
+                  <div class="flex justify-between gap-2 border-b pb-4">
+                    <div class="flex flex-col gap-4">
+                      <FormattedDate date={post.data.pubDate} />
+                      <a class="text-lg font-bold" href={`/blog/${post.slug}`}>
+                        {post.data.title}
+                      </a>
+                      <div class="flex gap-2">
+                        {post.data.tags?.map((i: string) => {
+                          return <TagLink tag={i} />
+                        })}
+                      </div>
                     </div>
+                    <a href={`/blog/${post.slug}`}>
+                      <img
+                        src={post.data.heroImage}
+                        alt=""
+                        class="h-24 w-40 border border-gray-200 bg-contain"
+                      />
+                    </a>
                   </div>
-                  <a href={`/blog/${post.slug}`}>
-                    <img
-                      src={post.data.heroImage}
-                      alt=""
-                      class="w-40 h-24 bg-contain border border-gray-200"
-                    />
-                  </a>
-                </div>
-              ))
-            }
+                ))}
+              </div>
             </div>
-
-          </div>
-        ))
+          ))
       }
     </main>
     <Footer />
