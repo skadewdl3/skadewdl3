@@ -24,8 +24,6 @@ posts.forEach((post) => {
   }
   postByYear[year].push(post)
 })
-
-const url = Astro.url
 ---
 
 <!doctype html>
@@ -36,7 +34,7 @@ const url = Astro.url
   <body
     class="mx-auto my-4 w-full max-w-screen-md transition-colors duration-300 dark:bg-neutral-800 dark:text-neutral-300"
   >
-    <Header url={url} />
+    <Header />
     <main
       class="mx-auto my-4 flex w-full max-w-screen-md flex-col justify-center gap-4"
     >
