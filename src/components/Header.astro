@@ -7,14 +7,18 @@ import ThemeIcon from './ThemeIcon.astro'
 let url = Astro.url.pathname
 
 const links = [
-  { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
   { name: 'Blog', url: '/blog', icon: 'pencil-1' },
   { name: 'Projects', url: '/projects', icon: 'code' },
+  { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
 ]
 
 const rightSideLinks = links.filter(({ url: temp }) => !url.startsWith(temp))
 
-const active = links.find(({ url: temp }) => url.startsWith(temp)) || links[0]
+const active = links.find(({ url: temp }) => url.startsWith(temp)) as {
+  name: string
+  url: string
+  icon: string
+}
 ---
 
 <header
