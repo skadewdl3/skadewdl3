@@ -41,9 +41,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.5
         version: 0.6.5(prettier@3.3.3)
-      simple-icons-astro:
-        specifier: ^13.2.0
-        version: 13.2.0(astro@4.12.2(@types/node@20.14.12)(typescript@5.5.4))
+      simple-icons:
+        specifier: ^13.3.0
+        version: 13.3.0
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.4.0
@@ -2186,10 +2186,9 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  simple-icons-astro@13.2.0:
-    resolution: {integrity: sha512-IS/seQi1uWUIhTvrf/TwkFlyQlj/hSvJ5AJoF4BtkMoc3iHoKicAUz18wfB3yavkPJQm7vMbTr7A6xM8SDz9Gw==}
-    peerDependencies:
-      astro: '>=2.7.1'
+  simple-icons@13.3.0:
+    resolution: {integrity: sha512-Ls7JP+S0Gg4ZDEb07R9URp7Sk3d5UWY/dZm06jrbIezqIl0H4M780Cy49T3QTxZlFEXv/T8MNDRW5b45EJw9Bg==}
+    engines: {node: '>=0.12.18'}
 
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
@@ -5229,9 +5228,7 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-icons-astro@13.2.0(astro@4.12.2(@types/node@20.14.12)(typescript@5.5.4)):
-    dependencies:
-      astro: 4.12.2(@types/node@20.14.12)(typescript@5.5.4)
+  simple-icons@13.3.0: {}
 
   simple-swizzle@0.2.2:
     dependencies:
