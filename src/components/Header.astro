@@ -4,7 +4,7 @@ import { Icon } from 'astro-iconify'
 import { Astronav, MenuItems, MenuIcon } from 'astro-navbar'
 import ThemeIcon from './ThemeIcon.astro'
 
-let url = Astro.props.url.pathname as string
+let url = `/${Astro.request.url.split('/').pop()}`
 
 const links = [
   { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
