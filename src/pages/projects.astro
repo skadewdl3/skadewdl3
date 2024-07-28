@@ -13,12 +13,14 @@ const projects = [
     description: 'Description of project 1',
     link: '/',
     technologies: [Github],
+    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fanimweb.png?alt=media&token=f96d5f19-deeb-46cc-98ab-e4c99e7860d9' 
   },
   {
     name: 'Project 2',
     description: 'Description of project 2',
     link: '/',
     technologies: [],
+    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fanimweb.png?alt=media&token=f96d5f19-deeb-46cc-98ab-e4c99e7860d9' 
   }
 ]
 ---
@@ -32,11 +34,11 @@ const projects = [
     <main
       class="w-full max-w-screen-md mx-auto my-4 flex flex-col gap-4 justify-center"
     >
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid place-items-center md:place-items-start md:grid-cols-2 gap-4 md:gap-8 xl:gap-12">
         {
-          projects.map(({ name, description, link, technologies }) => (
-          <div class="project">
-            <img src="/Me.jpeg" />
+        projects.map(({ name, description, link, technologies, img }) => (
+        <div class="project w-[90%] sm:w-3/5 md:w-full">
+          <img src={img} />
             <p class="name">{name}</p>
             <p class="description">{description}</p>
             <ul>
