@@ -6,23 +6,25 @@ heroImage: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.
 tags: ["marching-squares", "quadtrees", "computational-geometry", "p5.js", "creative coding"]
 ---
 
-# Marching Squares and Quadtrees - A Primer
 
-In the world of computer graphics and game development, two algorithms often come up - Marching Squares and Quadtrees. These algorithms are fundamental for terrain generation, collision detection, and more. This post aims to provide a basic understanding of these algorithms, their applications, and how they work together.
+In the world of computer graphics and game development, an algorithm that comes up often is Marching Squares.
+Quadtrees are also used often in the same fields, to optimize spatial queries. These two contents
+are fundamental for terrain generation, collision detection, and more.
 
-## Marching Squares
+This post aims to provide an understanding of these algorithms with interactive examples,
+their implementation in Typescript (using [p5.js](https://processing.org)) for the use case of
+graphing implicit functions.
+
+## Contouring
 
 Marching Squares is a computer graphics algorithm used for contouring in two-dimensional scalar fields. It's often used in terrain generation in games, where it helps create more realistic and complex landscapes.
 
 The algorithm works by dividing the terrain into a grid of squares. Each corner of a square is assigned a value based on the height of the terrain at that point. The algorithm then determines where the contour line should pass through the square, creating a more detailed and realistic terrain.
 
-```python
-# Pseudocode for Marching Squares
-def marching_squares(grid):
-    for each square in grid:
-        calculate corner values
-        determine contour line
-        draw contour line
+```typescript
+const marchingSquares = () => {
+  console.log('Marching Squares');
+}
 ```
 
 ## Quadtrees
