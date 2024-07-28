@@ -4,7 +4,7 @@ import { Icon } from 'astro-iconify'
 import { Astronav, MenuItems, MenuIcon } from 'astro-navbar'
 import ThemeIcon from './ThemeIcon.astro'
 
-let url = `/${Astro.url.pathname.split('/').pop()}`
+let url = `/${Astro.url.pathname.split('/')[1]}`
 
 const links = [
   { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
@@ -19,6 +19,7 @@ const active = links.find(({ url: temp }) => temp == url) as {
   url: string
   icon: string
 }
+console.log(active)
 ---
 
 <header
