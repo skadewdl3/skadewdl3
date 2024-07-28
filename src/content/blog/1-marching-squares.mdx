@@ -1,0 +1,45 @@
+---
+title: 'Marching Squares and Quadtrees - A Primer'
+description: "This blog post, titled 'Marching Squares and Quadtrees - A Primer', provides an introductory exploration into the concepts of Marching Squares and Quadtrees. It aims to demystify these complex algorithms, often used in computer graphics and game development for terrain generation and collision detection. The post breaks down the theory behind these algorithms, their applications, and how they work in tandem. It also includes practical examples and code snippets to help readers understand and implement these algorithms in their own projects. Ideal for both beginners and intermediate programmers looking to expand their knowledge in this area."
+pubDate: 'Jul 27 2024'
+heroImage: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/1-fine-tuning-llama2%2FCover%20Image.png?alt=media&token=21872ad7-092e-4882-baca-47ef25328bf9'
+tags: ["marching-squares", "quadtrees", "computational-geometry", "p5.js", "creative coding"]
+---
+
+# Marching Squares and Quadtrees - A Primer
+
+In the world of computer graphics and game development, two algorithms often come up - Marching Squares and Quadtrees. These algorithms are fundamental for terrain generation, collision detection, and more. This post aims to provide a basic understanding of these algorithms, their applications, and how they work together.
+
+## Marching Squares
+
+Marching Squares is a computer graphics algorithm used for contouring in two-dimensional scalar fields. It's often used in terrain generation in games, where it helps create more realistic and complex landscapes.
+
+The algorithm works by dividing the terrain into a grid of squares. Each corner of a square is assigned a value based on the height of the terrain at that point. The algorithm then determines where the contour line should pass through the square, creating a more detailed and realistic terrain.
+
+```python
+# Pseudocode for Marching Squares
+def marching_squares(grid):
+    for each square in grid:
+        calculate corner values
+        determine contour line
+        draw contour line
+```
+
+## Quadtrees
+
+Quadtrees, on the other hand, are a tree data structure used in computer graphics and game development for spatial partitioning. They're often used for collision detection, where they help determine which objects might collide without having to check every single object.
+
+The algorithm works by dividing the space into four quadrants. Each quadrant can be further divided into four smaller quadrants, and so on. This creates a tree structure where each node represents a quadrant of space, making it easier to check for potential collisions.
+
+```python
+# Pseudocode for Quadtrees
+def quadtree(space):
+    divide space into quadrants
+    for each quadrant:
+        if quadrant contains more than one object:
+            quadtree(quadrant)
+```
+
+## Conclusion
+
+Marching Squares and Quadtrees are powerful tools in computer graphics and game development. Understanding these algorithms and how they work together can help you create more complex and efficient games. So, start experimenting with these algorithms and see what you can create!
