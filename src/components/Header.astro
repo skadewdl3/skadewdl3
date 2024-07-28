@@ -4,17 +4,17 @@ import { Icon } from 'astro-iconify'
 import { Astronav, MenuItems, MenuIcon } from 'astro-navbar'
 import ThemeIcon from './ThemeIcon.astro'
 
-let url = Astro.url.pathname
+let url = `/${Astro.url.pathname.split('/').pop()}`
 
 const links = [
+  { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
   { name: 'Blog', url: '/blog', icon: 'pencil-1' },
   { name: 'Projects', url: '/projects', icon: 'code' },
-  { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
 ]
 
-const rightSideLinks = links.filter(({ url: temp }) => !url.startsWith(temp))
+const rightSideLinks = links.filter(({ url: temp }) => temp !== url)
 
-const active = links.find((x) => !rightSideLinks.includes(x)) as {
+const active = links.find(({ url: temp }) => temp == url) as {
   name: string
   url: string
   icon: string
