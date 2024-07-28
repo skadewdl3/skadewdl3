@@ -11,11 +11,16 @@ import ThemeIcon from "./ThemeIcon.astro";
 const { title } = Astro.props;
 const url = Astro.request.url.split('/').pop()
 
-const is = (name: string) => {
-  return url === name;
-};
+const links = [
+  { name: 'Portfolio', url: '/', icon: 'crumpled-paper' },
+  { name: 'Blog', url: '/blog', icon: 'pencil-1' },
+  { name: 'Projects', url: '/projects', icon: 'code' },
+]
 
+const rightSideLinks = links.filter(({ url: temp }) => temp !== `/${url}`);
 
+const active = links.find(({ url: temp }) => temp === `/${url}`);
+console.log(active)
 ---
 <script>
 document.querySelector('.header-title')?.addEventListener('click', () => {
@@ -26,7 +31,9 @@ document.querySelector('.header-title')?.addEventListener('click', () => {
 <header class="lg:flex py-4 pt-2 px-4 sm:px-6 xl:px-0 md:pt-10 gap-5 mb-10 lg:mb-28 w-full">
   <Astronav>
     <div class="flex w-full justify-between items-end border-b lg:border-none pb-4 lg:pb-0">
-      <a class="header-title font-semibold text-xl flex gap-2 items-center group"><Icon name="radix-icons:crumpled-paper" class="w-5 h-5 group-hover:rotate-[17deg]" />{ title }</a>
+        <a class="header-title font-semibold text-xl flex gap-2 items-center group">
+          <Icon name={`radix-icons:${active.icon}`}` class="w-5 h-5 group-hover:rotate-[17deg]" />{ title }
+        </a>
       <div class="lg:hidden flex items-center justify-center gap-4">
         <MenuIcon class="w-4 h-4 text-gray-800 dark:text-neutral-300" />
 		<ThemeIcon class="w-10" />
@@ -34,9 +41,15 @@ document.querySelector('.header-title')?.addEventListener('click', () => {
     </div>
     <MenuItems class="hidden lg:flex">
       <ul class="flex flex-col lg:flex-row lg:gap-5 gap-3 mt-3 lg:mt-0  pb-4 lg:pb-0 border-b border-neutral-400 lg:border-b-0">
-        { !is('') && <li class="flex items-center"><a href="/">Portfolio</a></li> }
-        { !is('blog') && <li class="flex items-center"><a href="/blog">Blog</a></li> }
-        { !is('projects') && <li class="flex items-center"><a href="/projects">Projects</a></li> }
+
+        {
+          rightSideLinks.map(({ name, url }) => (
+        <li class="flex items-center"><a href={url}>{name}</a></li>
+          ))
+        }
+        
+
+
 		  <ThemeIcon class="w-10 hidden lg:flex" />
       </ul>
     </MenuItems>
