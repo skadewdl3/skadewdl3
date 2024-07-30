@@ -6,6 +6,7 @@ import { SITE_DESCRIPTION } from '../../consts'
 import { getCollection, type CollectionEntry } from 'astro:content'
 import FormattedDate from '../../components/site/FormattedDate.astro'
 import TagLink from '../../components/site/TagLink.astro'
+import { Image } from 'astro:assets'
 
 type Post = CollectionEntry<'blog'>
 
@@ -59,9 +60,10 @@ posts.forEach((post) => {
                       </div>
                     </div>
                     <a href={`/blog/${post.slug}`}>
-                      <img
-                        src={post.data.heroImage}
+                      <Image
+                        src={post.data.heroImage as string}
                         alt=""
+                        inferSize
                         class="h-24 w-40 border border-gray-200 bg-contain"
                       />
                     </a>

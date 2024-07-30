@@ -5,6 +5,7 @@ import Header from '../components/site/Header.astro'
 import Footer from '../components/site/Footer.astro'
 import FormattedDate from '../components/site/FormattedDate.astro'
 import TagLink from '../components/site/TagLink.astro'
+import { Image } from 'astro:assets'
 
 type Props = CollectionEntry<'blog'>['data']
 
@@ -33,11 +34,7 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
           {title}
         </h1>
         <div>
-          {
-            heroImage && (
-              <img width={1020} height={510} src={heroImage} alt="" />
-            )
-          }
+          {heroImage && <Image src={heroImage} inferSize alt="" />}
         </div>
         <div class="mt-10">
           <slot />

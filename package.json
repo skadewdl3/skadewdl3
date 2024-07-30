@@ -17,6 +17,7 @@
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vue": "^4.5.0",
     "@astropub/icons": "^0.2.0",
+    "@unpic/astro": "^0.0.46",
     "astro": "^4.11.5",
     "astro-iconify": "^1.2.0",
     "astro-navbar": "^2.3.2",
