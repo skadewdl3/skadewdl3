@@ -4,6 +4,7 @@ import { SITE_DESCRIPTION } from '../consts'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import { Icon } from 'astro-iconify'
+import { Image } from 'astro:assets'
 import {
   siNuxtdotjs,
   siTypescript,
@@ -16,11 +17,31 @@ import {
   siP5dotjs,
   siReact,
   siJavascript,
+  siMeta,
+  siHuggingface,
+  siPytorch,
+  siStreamlit,
+  siScikitlearn,
 } from 'simple-icons'
 
 console.log(siNuxtdotjs)
 
 const projects = [
+  {
+    name: 'Recipe Generation using Llama2',
+    description:
+      'Integrated CNN and Meta Llama2 to generate recipes from ingredients.',
+    technologies: [
+      siMeta,
+      siHuggingface,
+      siPytorch,
+      siStreamlit,
+      siScikitlearn,
+    ],
+    img: 'https://firebasestorage.googleapis.com/v0/b/skadewdl3-5965c.appspot.com/o/projects%2Fllama2.jpg?alt=media&token=a3b143f5-c23f-4cec-a8ef-26f6fac7e188',
+    publication: undefined,
+    blogLink: '/blog/2-llama2-recipe-generation',
+  },
   {
     name: 'Nrutyangan',
     description: 'Kathak Academy website with dynamic content management.',
@@ -83,10 +104,11 @@ const projects = [
               githubLink,
               blogLink,
               technologies,
+              publication,
               img,
             }) => (
               <div class="project w-[90%] sm:w-3/5 md:w-full">
-                <img src={img} />
+                <Image src={img} alt={name} inferSize />
                 <p class="name text-lg font-semibold">{name}</p>
                 <p class="description my-2">{description}</p>
                 <ul class="flex items-center gap-x-4">
@@ -96,14 +118,17 @@ const projects = [
                         name={`simple-icons:${icon.slug}`}
                         color={`#${icon.hex}`}
                         class="h-5 w-5"
+                        title={icon.title}
                       />
                     </li>
                   ))}
                 </ul>
                 <div class="my-2 flex items-center justify-end">
-                  <a href={link} class="ml-4" target="_blank">
-                    Link
-                  </a>
+                  {link && (
+                    <a href={link} class="ml-4" target="_blank">
+                      Link
+                    </a>
+                  )}
                   {githubLink && (
                     <a href={githubLink} class="ml-4" target="_blank">
                       GitHub
@@ -112,6 +137,11 @@ const projects = [
                   {blogLink && (
                     <a href={blogLink} class="ml-4" target="_blank">
                       Blog
+                    </a>
+                  )}
+                  {publication && (
+                    <a href={publication} class="ml-4" target="_blank">
+                      Publication
                     </a>
                   )}
                 </div>
