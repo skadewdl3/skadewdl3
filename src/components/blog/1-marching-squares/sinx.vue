@@ -1,35 +1,24 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import initP5 from '../../../utils/initP5'
 
 
-onMounted(async () => {
-  const p5 = await import('p5')
-  console.log("Hello World")
-  console.log(window)
+function setup(width, height) {
+  console.log(width, height)
+  this.createCanvas(width, height);
+}
 
-  function setup() {
-    this.createCanvas(400, 400);
-  }
+function draw() {
+  this.background(0)
+}
 
-  function draw() {
-    this.background(0)
-  }
-
-  console.log(p5.default)
-
-
-
-  const sketch = new p5.default((sketch) => {
-    sketch.setup = () => setup.call(sketch)
-    sketch.draw = () => draw.call(sketch)
-  }, document.querySelector('.p5-sketch'))
-
-  console.log("Hello World")
-  console.log(window)
+onMounted(() => {
+  let root = document.querySelector('.p5-sketch')
+  let sketch = initP5(root, 3 / 16, setup, draw)
 })
 </script>
 
 <template>
-  <div class="p5-sketch"></div>
+  <div class="p5-sketch w-full"></div>
   This is from the sinx file
 </template>
