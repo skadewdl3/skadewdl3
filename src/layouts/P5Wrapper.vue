@@ -36,7 +36,8 @@ onMounted(async () => {
   <div class="relative" ref="root">
 
     <div class="absolute group loading bg-[#2c2c2c] opacity-0 z-[-1] w-full transition-all" ref="load">
-      <div class="loading-dark group-[.loading]:opacity-100 opacity-0 transition-all w-full h-full loading-dark">
+      <div
+        class="grid place-items-center loading-dark group-[.loading]:opacity-100 opacity-0 transition-all w-full h-full loading-dark">
         <p>Loading animation...</p>
       </div>
     </div>
