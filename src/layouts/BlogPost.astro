@@ -34,7 +34,11 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
           {title}
         </h1>
         <div>
-          {heroImage && <Image src={heroImage} inferSize alt="" />}
+          {
+            heroImage && (
+              <Image src={heroImage} class="rounded-2xl" inferSize alt="" />
+            )
+          }
         </div>
         <div class="mt-10">
           <slot />

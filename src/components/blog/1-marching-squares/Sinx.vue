@@ -2,33 +2,51 @@
 import { onMounted, ref } from 'vue'
 import initP5 from '../../../utils/initP5'
 
-
-let points = [];
-
-function setup(width, height) {
-  this.createCanvas(width, height);
-  for (let i = 0; i < width; i += 20) {
-    let x = i;
-    let y = (height / 2) + this.sin(x) * 20
-    points.push(this.createVector(x, y));
-  }
-  console.log(points)
-}
-
-function draw() {
-  this.background(0, 255, 0, 0)
-  this.stroke(255, 0, 0)
-  this.strokeWeight(3)
-  for (let i = 0; i < points.length - 1; i++) {
-    this.point(points[i].x, points[i].y)
-  }
-}
-
 const p5Root = ref(null)
 
 onMounted(() => {
   let sketch = initP5(p5Root.value, 3 / 16, setup, draw)
 })
+
+let points = []
+let resolution
+let origin
+let frequency
+
+function updatePoints() {
+  points = []
+  let n = resolution.value()
+  for (let i = 0; i < n + 1; i += 1) {
+    let x = this.width * (i / resolution.value());
+    let y = this.height / 2 * Math.sin(2 * frequency.value() * Math.PI * (i / n));
+    points.push(this.createVector(x, y))
+  }
+}
+
+function setup(width, height) {
+  this.createCanvas(width, height);
+  resolution = this.createSlider(2, 100, 5, 1)
+  resolution.input(updatePoints.bind(this))
+
+  frequency = this.createSlider(0.5, 4, 1, 0.1)
+  frequency.input(updatePoints.bind(this))
+
+
+  origin = this.createVector(0, height / 2);
+  updatePoints.bind(this)()
+}
+
+function draw() {
+  this.background(0)
+  this.stroke(255, 0, 0)
+  this.strokeWeight(5)
+
+  this.translate(origin);
+  for (let point of points) {
+    this.point(point.x, point.y)
+  }
+}
+
 </script>
 
 <template>
