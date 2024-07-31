@@ -12,11 +12,26 @@ In the world of computer graphics and game development, an algorithm that comes 
 Quadtrees are also used often in the same fields, to optimize spatial queries. These two contents
 are fundamental for terrain generation, collision detection, and more.
 
-This post aims to provide an understanding of these algorithms with interactive examples,
-their implementation in Typescript (using [p5.js](https://processing.org)) for the use case of
-graphing implicit functions.
+This post focuses on understanding Marching Squares, and implementing it in JavaScript using p5.js. We'll
+cover on optimizing this approach using Quadtrees in a follow up blog post.
+
+But first, let's build some motivation for why we need marching squares.
+
+## Motivation
+#### The Problem
+Let's say we want to build a graphing calculator. This mean we'd like to visualize various mathematical
+functions. For example, consider the function `y = sin(x)`. Let's take look at this function in the graph below:
 
 <Sinx client:visible />
+
+You can play around with the function to see how it changes with frequency and resolution. Try decreasing the
+resolution all the way down and see how it gets janky. Now max-out the resolution, and try increasing the frequency.
+You'll notice how the function gets more "hilly" and complex. Now turn down both of them, and see how the function
+doesn't even look close to the actual sin function.
+
+Let's explore why this happens, and then we'll introduce Marching Squares to solve this issue.
+
+#### Why does this happen?
 
 ## Contouring
 
