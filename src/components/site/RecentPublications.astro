@@ -2,11 +2,13 @@
 import { getCollection } from 'astro:content'
 import FormattedDate from './FormattedDate.astro'
 import TagLink from './TagLink.astro'
-import { Image } from 'astro:assets'
+import { Image } from '@unpic/astro'
 
 const posts = await getCollection('blog')
 let numberOfPostsToDisplay = 3
-let recentPosts = posts.slice(0, numberOfPostsToDisplay)
+let recentPosts = posts
+  .slice(0, numberOfPostsToDisplay)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 ---
 
 <div class="mt-16 flex flex-col gap-4 px-4 md:px-16">
@@ -29,7 +31,7 @@ let recentPosts = posts.slice(0, numberOfPostsToDisplay)
           {post.data.heroImage && (
             <Image
               src={post.data.heroImage}
-              inferSize
+              background="auto"
               alt={post.data.title}
               class="h-24 w-40 border border-gray-200 bg-contain"
             />

@@ -25,6 +25,7 @@ export default defineConfig({
   image: {
     service: imageService({
       placeholder: "blurhash",
+      fallbackService: "uploadcare"
     })
   }
 });

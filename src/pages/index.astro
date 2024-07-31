@@ -4,6 +4,7 @@ import Header from '../components/site/Header.astro'
 import Footer from '../components/site/Footer.astro'
 import { SITE_DESCRIPTION } from '../consts'
 import RecentPublications from '../components/site/RecentPublications.astro'
+import { Image } from '@unpic/astro'
 ---
 
 <script>
@@ -54,7 +55,12 @@ import RecentPublications from '../components/site/RecentPublications.astro'
         <div
           class="mt-6 flex aspect-video w-full flex-col items-center justify-center gap-2.5 px-4 lg:px-0"
         >
-          <img src="/Me.jpeg" alt="Soham Karandikar" class="object-contain" />
+          <Image
+            background="auto"
+            src="https://ucarecdn.com/e16c1f39-0067-42f1-bdcf-021335ae064c/Me.jpeg"
+            alt="Soham Karandikar"
+            class="object-contain"
+          />
           <p class="text-xs italic text-gray-600 dark:text-neutral-400">
             A picture me in the scenic beauty of Mulshi, Pune 🌲
           </p>

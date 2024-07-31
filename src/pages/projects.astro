@@ -4,7 +4,7 @@ import { SITE_DESCRIPTION } from '../consts'
 import Header from '../components/site/Header.astro'
 import Footer from '../components/site/Footer.astro'
 import { Icon } from 'astro-iconify'
-import { Image } from 'astro:assets'
+import { Image } from '@unpic/astro'
 import {
   siNuxtdotjs,
   siTypescript,
@@ -108,7 +108,7 @@ const projects = [
               img,
             }) => (
               <div class="project w-[90%] sm:w-3/5 md:w-full">
-                <Image src={img} alt={name} inferSize />
+                <Image src={img} alt={name} />
                 <p class="name text-lg font-semibold">{name}</p>
                 <p class="description my-2">{description}</p>
                 <ul class="flex items-center gap-x-4">
@@ -119,6 +119,7 @@ const projects = [
                         color={`#${icon.hex}`}
                         class="h-5 w-5"
                         title={icon.title}
+                        background="auto"
                       />
                     </li>
                   ))}

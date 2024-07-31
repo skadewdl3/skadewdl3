@@ -6,15 +6,14 @@ const p5Root = ref(null)
 const resolution = ref(51)
 const frequency = ref(1)
 
-onMounted(() => {
-  let sketch = initP5(p5Root.value, 3 / 16, setup, draw)
+let p
+onMounted(async () => {
+  p = await initP5(p5Root.value, 3 / 16, setup, draw)
 })
 
 watch([resolution, frequency], updatePoints)
 
 let points = []
-let origin
-let p
 
 function updatePoints() {
   points = []
@@ -27,10 +26,7 @@ function updatePoints() {
 }
 
 function setup(width, height) {
-  p = this
   p.createCanvas(width, height);
-
-  origin = p.createVector(0, height / 2);
   updatePoints()
 }
 
@@ -39,7 +35,7 @@ function draw() {
   p.stroke(255, 0, 0)
   p.strokeWeight(2)
 
-  p.translate(origin);
+  p.translate(0, p.height / 2);
   for (let i = 0; i < points.length - 1; i++) {
     p.line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y)
   }
