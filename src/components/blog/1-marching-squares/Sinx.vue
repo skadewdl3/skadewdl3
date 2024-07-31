@@ -1,20 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import initP5 from '../../../utils/initP5'
+import P5Wrapper from '@/layouts/P5Wrapper.vue'
 
-const p5Root = ref(null)
 const resolution = ref(51)
 const frequency = ref(1)
-
-let p
-onMounted(async () => {
-  initP5(p5Root.value, 3 / 16, setup, draw)
-})
 
 watch([resolution, frequency], updatePoints)
 
 let points = []
 let origin
+let p
 
 function updatePoints() {
   points = []
@@ -42,21 +37,47 @@ function draw() {
     p.line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y)
   }
 }
-
 </script>
 
 <template>
-  <div class="p5-sketch w-full" ref="p5Root"></div>
-  <br />
-  <div class="grid grid-cols-2 place-items-center">
-    <div class="sinx-control text-center">
-      <p>Resolution</p>
-      <input type="range" min="3" max="99" step="1" v-model="resolution" />
+  <P5Wrapper :setup="setup" :draw="draw" :aspectRatio="3 / 16">
+    <div class="grid grid-cols-2 place-items-center">
+      <div class="sinx-control text-center">
+        <p>Resolution</p>
+        <input type="range" min="3" max="99" step="1" v-model="resolution" />
+      </div>
+      <div class="sinx-control text-center">
+        <p>Frequency</p>
+        <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
+      </div>
     </div>
-    <div class="sinx-control text-center">
-      <p>Frequency</p>
-      <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
-    </div>
-  </div>
-  <br />
+  </P5Wrapper>
 </template>
+
+<style scoped>
+.loading-dark {
+  animation: pulse 2s infinite;
+  background: #2c2c2c;
+  height: 96px;
+  color: #fff;
+}
+
+.loading {
+  opacity: 1
+}
+
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    background-color: #333;
+  }
+
+  50% {
+    opacity: 0.5;
+    background-color: #2c2c2c;
+  }
+}
+</style>
