@@ -8,12 +8,13 @@ const frequency = ref(1)
 
 let p
 onMounted(async () => {
-  p = await initP5(p5Root.value, 3 / 16, setup, draw)
+  initP5(p5Root.value, 3 / 16, setup, draw)
 })
 
 watch([resolution, frequency], updatePoints)
 
 let points = []
+let origin
 
 function updatePoints() {
   points = []
@@ -25,7 +26,8 @@ function updatePoints() {
   }
 }
 
-function setup(width, height) {
+function setup(p5, width, height) {
+  p = p5
   p.createCanvas(width, height);
   updatePoints()
 }
