@@ -5,6 +5,8 @@ import P5Sketch from '@/components/P5Sketch.vue'
 
 const resolution = ref(51)
 const frequency = ref(1)
+const showLines = ref(true)
+const showAxes = ref(false)
 
 
 watch([resolution, frequency], updatePoints)
@@ -23,6 +25,27 @@ function updatePoints() {
   }
 }
 
+function drawAxes() {
+  p.strokeWeight(0.5)
+  p.stroke(255)
+  // x axis
+  p.line(0, 0, p.width, 0)
+  // y axis
+  p.line(2, -p.height / 2, 2, p.height / 2)
+
+  for (let i = 0; i < points.length; i++) {
+    p.line(points[i].x, -5, points[i].x, 5)
+  }
+
+
+
+
+  p.fill(255, 255, 0)
+  p.textSize(20)
+  p.text("x", p.width - 10, 20)
+  p.text("y", 10, -p.height / 2 + 20)
+}
+
 function setup(p5, width, height) {
   p = p5
   p.createCanvas(width, height);
@@ -31,12 +54,19 @@ function setup(p5, width, height) {
 
 function draw() {
   p.background(0)
-  p.stroke(255, 0, 0)
-  p.strokeWeight(2)
 
   p.translate(0, p.height / 2);
+  if (showAxes.value) {
+    drawAxes()
+  }
+  p.stroke(255, 0, 0)
+  p.strokeWeight(2)
   for (let i = 0; i < points.length - 1; i++) {
-    p.line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y)
+    if (showLines.value) {
+      p.line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y)
+    } else {
+      p.point(points[i].x, points[i].y)
+    }
   }
 }
 </script>
@@ -48,7 +78,7 @@ function draw() {
 
       <P5Sketch v-bind="props" />
       <br />
-      <div class="sinx-controls grid grid-cols-2 place-items-center">
+      <div class="sinx-controls grid grid-cols-3 place-items-center">
         <div class="text-center">
           <p>Resolution</p>
           <input type="range" min="3" max="99" step="1" v-model="resolution" />
@@ -56,6 +86,16 @@ function draw() {
         <div class="text-center">
           <p>Frequency</p>
           <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
+        </div>
+        <div class="flex flex-col w-1/2">
+          <div class="text-center flex justify-between items-center">
+            <span class="inline">Show Lines</span>
+            <input type="checkbox" v-model="showLines">
+          </div>
+          <div class="text-center flex justify-between items-center">
+            <span>Show Axes</span>
+            <input type="checkbox" v-model="showAxes">
+          </div>
         </div>
       </div>
 

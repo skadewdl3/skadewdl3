@@ -12,26 +12,20 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 onMounted(async () => {
-  try {
-    const width = parseInt(window.getComputedStyle(element.value).width)
-    const height = aspectRatio * width
-    element.value.style.height = `${height}px`
+  const width = parseInt(window.getComputedStyle(element.value).width)
+  const height = aspectRatio * width
+  element.value.style.height = `${height}px`
 
-    const p5 = await import('p5')
-    element.innerHTML = ''
-    let sketch = new p5.default((sketch: any) => {
-      let p5Setup = () => setup(sketch, width, height)
-      let p5Draw = draw
-      sketch.setup = p5Setup
-      sketch.draw = p5Draw
-    }, element.value)
+  const p5 = await import('p5')
+  element.innerHTML = ''
+  let sketch = new p5.default((sketch: any) => {
+    let p5Setup = () => setup(sketch, width, height)
+    let p5Draw = draw
+    sketch.setup = p5Setup
+    sketch.draw = p5Draw
+  }, element.value)
 
-    await sleep(3000)
-
-    setLoading && setLoading(false)
-  } catch (e) {
-    setError && setError(e)
-  }
+  setLoading && setLoading(false)
 })
 </script>
 

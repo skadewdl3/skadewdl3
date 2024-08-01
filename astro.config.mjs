@@ -5,12 +5,16 @@ import tailwind from '@astrojs/tailwind';
 import vue from "@astrojs/vue";
 import { imageService } from '@unpic/astro/service'
 
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex'
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://example.com',
   integrations: [mdx(), sitemap(), tailwind(), vue()],
   markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
     shikiConfig: {
       // Choose from Shiki's built-in themes (or add your own)
       // https://shiki.style/themes

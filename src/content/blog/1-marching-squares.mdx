@@ -19,19 +19,28 @@ But first, let's build some motivation for why we need marching squares.
 
 ## Motivation
 #### The Problem
-Let's say we want to build a graphing calculator. This mean we'd like to visualize various mathematical
-functions. For example, consider the function `y = sin(x)`. Let's take look at this function in the graph below:
+Let's say we want to draw a mathematical function. For example, consider the function $y = sin(x)$. Let's take look at this function in the graph below:
 
 <Sinx client:visible />
 
-You can play around with the function to see how it changes with frequency and resolution. Try decreasing the
-resolution all the way down and see how it gets janky. Now max-out the resolution, and try increasing the frequency.
-You'll notice how the function gets more "hilly" and complex. Now turn down both of them, and see how the function
-doesn't even look close to the actual sin function.
+You can play around with the function to see how it changes with frequency and resolution. Try doing the following things:
+1. Decrease the resolution all the way down and see how it gets janky.
+2. Max-out the resolution, and try increasing the frequency. You'll notice how the function gets more "hilly" and complex.
+3. Turn down both of them, and see how the function doesn't even look close to the actual sin function.
+4. Turn off the "show lines" option, and play around with the resolution. Notice how the number of points to each other as the resolution increases.
 
-Let's explore why this happens, and then we'll introduce Marching Squares to solve this issue.
+This changing of the graph is due to the changes in how we draw the function. Essentially, we're calculating the value of the function
+at various x coordinates and plotting them. Increase the granularity of the graph, i.e. we add more and more subdivisions.
+Try turning on the "show axes" function and see how the x-axis is divided into more and more subdivisions.
 
-#### Why does this happen?
+We calculate the value of $y$, as per $y = sin(x)$ at each of these points. Then, we connect them all by lines which is the graph of the function.
+
+
+This approach works well to a certain extent, however it has a very serious pitfall! Can you try to guess it? Here's a hint - try to thing
+about a function that gives two values of $$y$$ for any given $x$!
+
+#### The Pitfall
+
 
 ## Contouring
 
