@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import P5Wrapper from '@/layouts/P5Wrapper.vue'
+import P5Sketch from '@/components/P5Sketch.vue'
 
 const resolution = ref(51)
 const frequency = ref(1)
+
 
 watch([resolution, frequency], updatePoints)
 
@@ -40,18 +42,26 @@ function draw() {
 </script>
 
 <template>
-  <P5Wrapper :setup="setup" :draw="draw" :aspectRatio="3 / 16">
-    <div class="grid grid-cols-2 place-items-center">
-      <div class="sinx-control text-center">
-        <p>Resolution</p>
-        <input type="range" min="3" max="99" step="1" v-model="resolution" />
+  <br />
+  <P5Wrapper :aspectRatio="3 / 16" :setup="setup" :draw="draw">
+    <template v-slot="props">
+
+      <P5Sketch v-bind="props" />
+      <br />
+      <div class="sinx-controls grid grid-cols-2 place-items-center">
+        <div class="text-center">
+          <p>Resolution</p>
+          <input type="range" min="3" max="99" step="1" v-model="resolution" />
+        </div>
+        <div class="text-center">
+          <p>Frequency</p>
+          <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
+        </div>
       </div>
-      <div class="sinx-control text-center">
-        <p>Frequency</p>
-        <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
-      </div>
-    </div>
+
+    </template>
   </P5Wrapper>
+  <br />
 </template>
 
 <style scoped>
