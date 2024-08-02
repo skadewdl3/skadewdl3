@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, defineProps } from 'vue'
+import isDarkTheme from '@/utils/isDarkTheme'
 
 const root = ref(null)
 const element = ref(null)
 const load = ref(null)
 const props = defineProps(['setup', 'draw', 'aspectRatio', 'setLoading'])
-console.log(props)
+
 const { setup, draw, setLoading, aspectRatio } = props
 let p
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
+
 onMounted(async () => {
   const width = parseInt(window.getComputedStyle(element.value).width)
   const height = aspectRatio * width
@@ -19,6 +18,12 @@ onMounted(async () => {
   const p5 = await import('p5')
   element.innerHTML = ''
   let sketch = new p5.default((sketch: any) => {
+    sketch.Text = (...args) => {
+      sketch.scale(1, -1)
+      sketch.text(...args)
+      sketch.scale(1, -1)
+    }
+    sketch.darkTheme = isDarkTheme()
     let p5Setup = () => setup(sketch, width, height)
     let p5Draw = draw
     sketch.setup = p5Setup

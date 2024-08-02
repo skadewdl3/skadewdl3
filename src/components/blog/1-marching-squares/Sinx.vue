@@ -37,13 +37,10 @@ function drawAxes() {
     p.line(points[i].x, -5, points[i].x, 5)
   }
 
-
-
-
   p.fill(255, 255, 0)
   p.textSize(20)
-  p.text("x", p.width - 10, 20)
-  p.text("y", 10, -p.height / 2 + 20)
+  p.Text("x", p.width - 10, 20)
+  p.Text("y", 10, -p.height / 2 + 20)
 }
 
 function setup(p5, width, height) {
@@ -53,9 +50,10 @@ function setup(p5, width, height) {
 }
 
 function draw() {
-  p.background(0)
-
   p.translate(0, p.height / 2);
+  p.scale(1, -1)
+  p.background(p.darkTheme ? 0 : 233)
+
   if (showAxes.value) {
     drawAxes()
   }
@@ -78,7 +76,7 @@ function draw() {
 
       <P5Sketch v-bind="props" />
       <br />
-      <div class="sinx-controls grid grid-cols-3 place-items-center">
+      <div class="sinx-controls grid grid-cols-2 md:grid-cols-3 place-items-center">
         <div class="text-center">
           <p>Resolution</p>
           <input type="range" min="3" max="99" step="1" v-model="resolution" />
@@ -87,7 +85,7 @@ function draw() {
           <p>Frequency</p>
           <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
         </div>
-        <div class="flex flex-col w-1/2">
+        <div class="flex-col w-1/2 hidden md:flex">
           <div class="text-center flex justify-between items-center">
             <span class="inline">Show Lines</span>
             <input type="checkbox" v-model="showLines">
@@ -97,8 +95,19 @@ function draw() {
             <input type="checkbox" v-model="showAxes">
           </div>
         </div>
+
       </div>
 
+      <div class="w-full md:hidden grid grid-cols-2 place-items-center">
+        <div class="text-center flex justify-between items-center">
+          <span class="inline mr-2">Show Lines</span>
+          <input type="checkbox" v-model="showLines">
+        </div>
+        <div class="text-center flex justify-between items-center">
+          <span class="inline mr-2">Show Axes</span>
+          <input type="checkbox" v-model="showAxes">
+        </div>
+      </div>
     </template>
   </P5Wrapper>
   <br />
