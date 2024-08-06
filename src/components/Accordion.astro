@@ -1,0 +1,11 @@
+---
+// @ts-ignore
+const { summary } = Astro.props || ''
+---
+
+<details>
+  <summary>{summary}</summary>
+  <div>
+    <slot />
+  </div>
+</details>

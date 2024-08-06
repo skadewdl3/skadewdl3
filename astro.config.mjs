@@ -1,11 +1,12 @@
-import { defineConfig } from 'astro/config';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import tailwind from '@astrojs/tailwind';
-import vue from "@astrojs/vue";
+import { defineConfig } from 'astro/config'
+import mdx from '@astrojs/mdx'
+import sitemap from '@astrojs/sitemap'
+import tailwind from '@astrojs/tailwind'
+import vue from '@astrojs/vue'
 import { imageService } from '@unpic/astro/service'
+import { transformerNotationDiff } from '@shikijs/transformers'
 
-import remarkMath from 'remark-math';
+import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 
 // https://astro.build/config
@@ -22,14 +23,15 @@ export default defineConfig({
       // See note below for using dual light/dark themes
       themes: {
         light: 'catppuccin-latte',
-        dark: 'poimandres'
-      }
-    }
+        dark: 'catppuccin-mocha',
+      },
+      transformers: [transformerNotationDiff()],
+    },
   },
   image: {
     service: imageService({
-      placeholder: "blurhash",
-      fallbackService: "uploadcare"
-    })
-  }
-});
+      placeholder: 'blurhash',
+      fallbackService: 'uploadcare',
+    }),
+  },
+})

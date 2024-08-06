@@ -6,6 +6,7 @@ heroImage: 'https://ucarecdn.com/7a0c1056-0ce4-48ac-890b-192598eed3ea/1marchings
 tags: ["marching-squares", "quadtrees", "p5.js"]
 ---
 import Sinx from '@blog-components/1-marching-squares/Sinx.vue'
+import Accordion from '@components/Accordion.astro'
 
 
 In the world of computer graphics and game development, an algorithm that comes up often is Marching Squares.
@@ -18,8 +19,8 @@ cover on optimizing this approach using Quadtrees in a follow up blog post.
 But first, let's build some motivation for why we need marching squares.
 
 ## Motivation
-#### The Problem
-Let's say we want to draw a mathematical function. For example, consider the function $y = sin(x)$. Let's take look at this function in the graph below:
+Say we want to draw a mathematical function, for example, $y = sin(x)$. The most intuitive way of doing so, would be
+calculating the value of $y$ at each point, and connecting them with lines. Let's take a look at this approach in the animation below:
 
 <Sinx client:visible />
 
@@ -28,30 +29,106 @@ You can play around with the function to see how it changes with frequency and r
 2. Max-out the resolution, and try increasing the frequency. You'll notice how the function gets more *hilly* and complex.
 3. Turn down both of them, and see how the function doesn't even look close to the actual sin function.
 4. Turn off the **show lines** option, and play around with the resolution. Notice how the number of points to each other as the resolution increases.
+5. Turn on the **show axes** option, and repeat the steps above.
 
-This changing of the graph is due to the changes in how we draw the function. Essentially, we're calculating the value of the function
-at various x coordinates and plotting them. Increase the granularity of the graph, i.e. we add more and more subdivisions.
+This changing of the graph is due to the changes in how we draw the function. As the resolution increases,
+we calculate and draw more and more points, in the same space. This makes the function look more accurate.
 
-> Try turning on the **show axes** function and see how the x-axis is divided into more and more subdivisions.
 
+#### The Problem
 We calculate the value of $y$, as per $y = sin(x)$ at each of these points. Then, we connect them all by lines which is the graph of the function.
 
+Let's take a look at the code for this approach.
+```javascript
+
+// The equation we are trying to draw
+const equation = x => sin(x)
+
+// How often we'll be calculating the value of y
+const resolution = 100
+let points = []
+
+function setup () {
+  createCanvas(400, 225)
+
+  // Caluclate the values of x, and y
+  // and store them in the points array
+  for (let i = 0; i < resolution; i++) {
+    let x = (width / resolution) * i
+    let y = (height / 2) * sin(2 * PI * (i / resolution))
+    points.push(createVector(x, y))
+  }
+}
+
+function draw() {
+  background(220);
+  translate(0, height / 2)
+  
+  // D
+  for (let i = 0; i < points.length - 2; i++) {
+    let p1 = points[i]
+    let p2 = points[i + 1]
+    line(p1.x, p1.y, p2.x, p2.y)
+  }
+}
+```
+
+You can [install p5.js](https://p5js.org/tutorials/setting-up-your-environment/), and try out above code, or simply use the [p5.js web editor](https://editor.p5js.org/).
 
 This approach works well to a certain extent, however it has a very serious pitfall! Can you try to guess it? Here's a hint - try to think
 about a function that gives two values of $$y$$ for any given $x$!
 
 #### The Pitfall
+It turns out that this approach does not work for implicit functions. *Implicit* functions are those that do not have a direct mapping between $x$ and $y$.
+Instead, they express a relationship between $x$ and $y$ in the form of an equation.
 
 
+Consider the equation of a circle: $x^2 + y^2 =  r^2$ where $r$ is the radius of the circle. Let's try to draw this circle using the same approach as above.
+
+```javascript
+
+// The equation we are trying to draw
+const equation = x => sin(x) // [!code --]
+const r = 5 // [!code ++]
+const equation = x => sqrt(r**2 - x**2) // [!code ++]
+
+// How often we'll be calculating the value of y
+const resolution = 100
+let points = []
+
+function setup () {
+  createCanvas(400, 225)
+
+  // Caluclate the values of x, and y
+  // and store them in the points array
+  for (let i = 0; i < resolution; i++) {
+    let x = (width / resolution) * i
+    let y = (height / 2) * sin(2 * PI * (i / resolution))
+    points.push(createVector(x, y))
+  }
+}
+
+function draw() {
+  background(220);
+  translate(0, height / 2)
+  
+  // D
+  for (let i = 0; i < points.length - 2; i++) {
+    let p1 = points[i]
+    let p2 = points[i + 1]
+    line(p1.x, p1.y, p2.x, p2.y)
+  }
+}
+```
 ## Contouring
 
 Marching Squares is a computer graphics algorithm used for contouring in two-dimensional scalar fields. It's often used in terrain generation in games, where it helps create more realistic and complex landscapes.
 
 The algorithm works by dividing the terrain into a grid of squares. Each corner of a square is assigned a value based on the height of the terrain at that point. The algorithm then determines where the contour line should pass through the square, creating a more detailed and realistic terrain.
 
-```typescript
-const marchingSquares = () => {
-  console.log('Marching Squares');
+```rust
+fn main () {
+  println!("Hello World")
 }
 ```
 
