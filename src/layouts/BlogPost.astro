@@ -6,6 +6,7 @@ import Footer from '../components/site/Footer.astro'
 import FormattedDate from '../components/site/FormattedDate.astro'
 import TagLink from '../components/site/TagLink.astro'
 import { Image } from '@unpic/astro'
+import { Icon } from 'astro-iconify'
 import 'katex/dist/katex.min.css'
 
 type Props = CollectionEntry<'blog'>['data']
@@ -22,6 +23,21 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
     class="mx-auto my-4 w-full max-w-screen-md transition-colors duration-300 dark:bg-neutral-800 dark:text-neutral-300"
   >
     <Header />
+    <div class="copy-icons hidden">
+      <p class="copy-icon flex items-center justify-end dark:hover:text-white">
+        <span class="mr-1">Copy</span>
+
+        <Icon class="h-6 w-6" name="radix-icons:copy" />
+      </p>
+
+      <p
+        class="copied-icon flex items-center justify-end dark:hover:text-white"
+      >
+        <span class="mr-1">Copied!</span>
+
+        <Icon class="h-6 w-6" name="radix-icons:clipboard-copy" />
+      </p>
+    </div>
     <main>
       <article class="px-4">
         <div class="mb-6 flex justify-between">
@@ -67,12 +83,55 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
       </article>
     </main>
     <Footer />
-  </body><style is:inline>
+  </body><script is:inline>
+    let copyButtonLabel = 'Copy Code'
+    let copyIcon = document.querySelector('.copy-icon').outerHTML
+    let copiedIcon = document.querySelector('.copied-icon').outerHTML
+
+    let codeBlocks = Array.from(document.querySelectorAll('.astro-code'))
+
+    for (let codeBlock of codeBlocks) {
+      console.log('this ran')
+      let wrapper = document.createElement('div')
+      wrapper.style.position = 'relative'
+
+      let copyButton = document.createElement('button')
+      copyButton.className = 'copy-code'
+      copyButton.innerHTML = copyIcon
+
+      codeBlock.setAttribute('tabindex', '0')
+      codeBlock.appendChild(copyButton)
+
+      // wrap codebock with relative parent element
+      codeBlock.parentNode?.insertBefore(wrapper, codeBlock)
+      wrapper.appendChild(codeBlock)
+
+      copyButton.addEventListener('click', async () => {
+        await copyCode(codeBlock, copyButton)
+      })
+    }
+
+    async function copyCode(block, button) {
+      let code = block.querySelector('code')
+      let text = code?.innerText || ''
+
+      await navigator.clipboard.writeText(text)
+
+      // visual feedback that task is completed
+      button.innerHTML = copiedIcon
+
+      setTimeout(() => {
+        button.innerHTML = copyIcon
+      }, 1000)
+    }
+  </script>
+
+  <style is:inline>
     /* Shiki styles */
     html.dark {
       .astro-code {
         background-color: var(--shiki-dark-bg) !important;
-        span {
+        code span {
           color: var(--shiki-dark) !important;
           font-style: var(--shiki-dark-font-style) !important;
           font-weight: var(--shiki-dark-font-weight) !important;
@@ -83,6 +142,12 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
 
     .astro-code {
       padding: 0;
+      .copy-code {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px;
+      }
       .line {
         display: inline;
         padding: 0 30px;
@@ -90,7 +155,7 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
       .diff {
         position: relative;
         display: inline-block;
-        width: 100vw;
+        width: 100%;
       }
 
       .remove {
