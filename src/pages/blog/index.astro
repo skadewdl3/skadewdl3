@@ -60,11 +60,10 @@ posts.forEach((post) => {
                       </div>
                     </div>
                     <a href={`/blog/${post.slug}`}>
-                      <Image
+                      <img
                         src={post.data.heroImage as string}
-                        background="auto"
                         alt=""
-                        class="h-24 w-40 border border-gray-200 bg-contain"
+                        class="h-24 min-w-40 max-w-40 border border-gray-200 bg-contain"
                       />
                     </a>
                   </div>

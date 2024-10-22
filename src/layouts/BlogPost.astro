@@ -52,17 +52,7 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
           {title}
         </h1>
         <div>
-          {
-            heroImage && (
-              <Image
-                src={heroImage}
-                class="rounded-2xl"
-                background="auto"
-                alt=""
-                background="auto"
-              />
-            )
-          }
+          {heroImage && <img src={heroImage} class="rounded-2xl" alt="" />}
         </div>
         <div class="mt-10">
           <slot />
@@ -83,50 +73,7 @@ const { title, description, pubDate, heroImage, tags } = Astro.props
       </article>
     </main>
     <Footer />
-  </body><script is:inline>
-    let copyButtonLabel = 'Copy Code'
-    let copyIcon = document.querySelector('.copy-icon').outerHTML
-    let copiedIcon = document.querySelector('.copied-icon').outerHTML
-
-    let codeBlocks = Array.from(document.querySelectorAll('.astro-code'))
-
-    for (let codeBlock of codeBlocks) {
-      console.log('this ran')
-      let wrapper = document.createElement('div')
-      wrapper.style.position = 'relative'
-
-      let copyButton = document.createElement('button')
-      copyButton.className = 'copy-code'
-      copyButton.innerHTML = copyIcon
-
-      codeBlock.setAttribute('tabindex', '0')
-      codeBlock.appendChild(copyButton)
-
-      // wrap codebock with relative parent element
-      codeBlock.parentNode?.insertBefore(wrapper, codeBlock)
-      wrapper.appendChild(codeBlock)
-
-      copyButton.addEventListener('click', async () => {
-        await copyCode(codeBlock, copyButton)
-      })
-    }
-
-    async function copyCode(block, button) {
-      let code = block.querySelector('code')
-      let text = code?.innerText || ''
-
-      await navigator.clipboard.writeText(text)
-
-      // visual feedback that task is completed
-      button.innerHTML = copiedIcon
-
-      setTimeout(() => {
-        button.innerHTML = copyIcon
-      }, 1000)
-    }
-  </script>
-
-  <style is:inline>
+  </body><style is:inline>
     /* Shiki styles */
     html.dark {
       .astro-code {

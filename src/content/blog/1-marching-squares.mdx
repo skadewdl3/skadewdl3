@@ -102,8 +102,9 @@ function setup () {
   // Caluclate the values of x, and y
   // and store them in the points array
   for (let i = 0; i < resolution; i++) {
-    let x = (width / resolution) * i
-    let y = (height / 2) * sin(2 * PI * (i / resolution))
+    let frac = i / resolution
+    let x = width * frac
+    let y = equation(x)
     points.push(createVector(x, y))
   }
 }
