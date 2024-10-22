@@ -12,10 +12,17 @@ const blog = defineCollection({
     heroImage: z.string().optional(),
     tags: z.array(z.string()).optional(),
     height: z.number().optional(),
-    width: z.number().optional()
+    width: z.number().optional(),
+    comments: z
+      .array(
+        z.object({
+          content: z.string(),
+          author: z.string(),
+          date: z.coerce.date(),
+        })
+      )
+      .optional(),
   }),
 })
 
-
 export const collections = { blog }
-

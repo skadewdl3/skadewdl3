@@ -23,6 +23,7 @@
     "astro-navbar": "^2.3.2",
     "astro-remark-eleventy-image": "^2.0.1",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "katex": "^0.16.11",
     "mathjs": "^13.0.3",
     "p5": "^1.9.4",
