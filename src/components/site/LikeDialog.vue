@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from '@nanostores/vue'
-import { commentDialogOpen } from '../../utils/state'
+import { likeDialogOpen } from '../../utils/state'
 import { Icon } from '@iconify/vue'
 import { type } from 'arktype'
 import { actions } from 'astro:actions'
@@ -9,8 +9,6 @@ import { actions } from 'astro:actions'
 const CommentSchema = type({
   name: 'string > 1',
   email: 'string.email',
-  message: 'string',
-  createdAt: 'string.date',
 })
 
 const error = ref(null)
@@ -22,31 +20,30 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['commentAdded'])
+const emit = defineEmits(['like.dded'])
 
-const isDialogOpen = useStore(commentDialogOpen)
-const comment = ref({
+const isDialogOpen = useStore(likeDialogOpen)
+const like = ref({
   name: '',
   email: '',
-  message: '',
-  createdAt: new Date().toISOString().split('T')[0], // Default to today's date
+  createdAt: new Date().toISOString().split('T')[0],
 })
 
 const closeDialog = () => {
-  commentDialogOpen.set(false)
+  likeDialogOpen.set(false)
 }
 
 const submitComment = async () => {
-  console.log(comment.value)
-  let res = CommentSchema(comment.value)
+  console.log(like.value)
+  let res = CommentSchema(like.value)
 
   if (Array.isArray(res)) {
     error.value = res[0]
     return
   }
 
-  res = await actions.addComment({
-    ...comment.value,
+  res = await actions.addLike({
+    ...like.value,
     slug: props.slug,
   })
 
@@ -70,7 +67,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleEsc)
 })
 
-watch(comment, () => (error.value = null), { deep: true })
+watch(like, () => (error.value = null), { deep: true })
 </script>
 
 <template>
@@ -85,7 +82,7 @@ watch(comment, () => (error.value = null), { deep: true })
       >
         <div class="flex items-center justify-between">
           <h2 class="mb-4 text-lg font-semibold text-gray-100">
-            Add a Comment
+            Like this post
           </h2>
           <Icon
             icon="mdi:close"
@@ -98,7 +95,7 @@ watch(comment, () => (error.value = null), { deep: true })
           <div>
             <label for="name" class="mb-1 block text-gray-300">Name</label>
             <input
-              v-model="comment.name"
+              v-model="like.name"
               type="text"
               id="name"
               class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
@@ -107,27 +104,16 @@ watch(comment, () => (error.value = null), { deep: true })
           <div>
             <label for="email" class="mb-1 block text-gray-300">Email</label>
             <input
-              v-model="comment.email"
+              v-model="like.email"
               type="email"
               id="email"
               class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
             />
           </div>
           <div>
-            <label for="message" class="mb-1 block text-gray-300"
-              >Comment</label
-            >
-            <textarea
-              v-model="comment.message"
-              id="message"
-              rows="4"
-              class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
-            ></textarea>
-          </div>
-          <div>
             <label for="createdAt" class="mb-1 block text-gray-300">Date</label>
             <input
-              v-model="comment.createdAt"
+              v-model="like.createdAt"
               type="date"
               id="createdAt"
               class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
@@ -137,7 +123,7 @@ watch(comment, () => (error.value = null), { deep: true })
             type="submit"
             class="neutral-100 w-full rounded border border-gray-600 px-4 py-2 hover:bg-neutral-700"
           >
-            Submit
+            Like
           </button>
           <div v-if="error" class="mt-2 text-center text-red-500">
             {{ error }}

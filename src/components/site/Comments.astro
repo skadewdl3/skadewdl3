@@ -1,22 +1,41 @@
 ---
-import { eq, db, Comment, desc } from 'astro:db'
+import { eq, db, Comment, desc, Like } from 'astro:db'
 import { Icon } from 'astro-iconify'
 const { slug } = Astro.props
 import CommentDialog from './CommentDialog.vue'
+import LikeDialog from './LikeDialog.vue'
+import numbro from 'numbro'
 
 const comments = await db
   .select()
   .from(Comment)
   .where(eq(Comment.postSlug, slug))
   .orderBy(desc(Comment.createdAt))
+
+const likesRes = await db.select().from(Like).where(eq(Like.postSlug, slug))
+const likesCount = likesRes.length
+let likes = numbro(likesCount).format({ average: true })
 ---
 
 <script>
-  import { commentDialogOpen } from '@/utils/state'
+  import { commentDialogOpen, likeDialogOpen } from '@/utils/state'
   document.querySelector('.comment-btn')?.addEventListener('click', () => {
     commentDialogOpen.set(true)
   })
+  document.querySelector('.like-btn')?.addEventListener('click', () => {
+    likeDialogOpen.set(true)
+  })
 </script>
+
+<div class="flex items-center justify-between">
+  <h1>{likes} people liked this post</h1>
+  <button
+    class="like-btn flex items-center justify-center gap-2 rounded text-gray-800 transition-colors hover:underline dark:text-gray-200"
+  >
+    <Icon name="mdi:heart" size={20} />
+    <span> Like </span>
+  </button>
+</div>
 
 <div class="flex items-center justify-between">
   <h1>Comments</h1>
@@ -47,3 +66,4 @@ const comments = await db
   }
 </div>
 <CommentDialog client:idle slug={slug} />
+<LikeDialog client:idle slug={slug} />
