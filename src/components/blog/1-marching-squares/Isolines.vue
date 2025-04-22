@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import P5Wrapper from '@/layouts/P5Wrapper.vue'
 import P5Sketch from '@/components/P5Sketch.vue'
+import MathRenderer from '@/components/site/Math.vue'
+import { renderMarkdown, roundToNthDecimal } from '@/utils/misc'
 
 // Control parameters with reactive refs
 const radius = ref(100)
@@ -11,12 +13,25 @@ const showAxes = ref(true)
 
 let p: any
 let angle = 0
-let font
+let font: any
+
+const markdown = ref(`
+Here is some math: $E = mc^2$
+And a block equation:
+
+$$
+\\int_{a}^{b} f(x)dx = F(b) - F(a)
+$$
+`)
+const equation = ref(await renderMarkdown(markdown.value))
+
+watch(markdown, async () => {
+  equation.value = await renderMarkdown(markdown.value)
+})
 
 function setup(p5: any, width: number, height: number) {
   p = p5
   p.createCanvas(width, height, p.WEBGL)
-
   p.textFont(font)
 }
 
@@ -183,8 +198,14 @@ function drawCirclePoints() {
     <template v-slot="props">
       <P5Sketch v-bind="props" />
       <br />
+      <br />
       <div class="grid grid-cols-2 place-items-center gap-4">
         <div class="flex w-full flex-col items-center justify-center gap-4">
+          <MathRenderer
+            :input="`x^2 + y^2 - (${roundToNthDecimal(radius / 50, 2)})^2 = ${roundToNthDecimal(elevation / 50, 2)}`"
+            :block="true"
+          />
+
           <div class="mb-2 flex justify-center space-x-4">
             <div class="flex items-center">
               <div class="mr-1 h-4 w-4 bg-red-500"></div>
@@ -198,11 +219,6 @@ function drawCirclePoints() {
               <div class="mr-1 h-4 w-4 bg-blue-500"></div>
               <span>Z-axis</span>
             </div>
-          </div>
-
-          <div class="flex items-center text-center">
-            <span class="mr-2 inline">Show Axes</span>
-            <input type="checkbox" v-model="showAxes" />
           </div>
         </div>
 

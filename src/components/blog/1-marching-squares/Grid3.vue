@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import P5Wrapper from '@/layouts/P5Wrapper.vue'
 import P5Sketch from '@/components/P5Sketch.vue'
-import { roundToNthDecimal } from '@/utils/math'
+import { roundToNthDecimal } from '@/utils/misc'
 
 const radius = ref(5.1)
 const discrete = ref(false)
