@@ -6,19 +6,36 @@ import vue from '@astrojs/vue'
 import { imageService } from '@unpic/astro/service'
 import { transformerNotationDiff } from '@shikijs/transformers'
 import remarkEleventyImage from 'astro-remark-eleventy-image'
-
+import remarkToc from 'remark-toc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
+
+import db from '@astrojs/db';
+
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://example.com',
-  integrations: [mdx(), sitemap(), tailwind(), vue(), remarkEleventyImage()],
+
+  integrations: [mdx(), sitemap(), tailwind(), vue(), remarkEleventyImage(), {
+    name: 'custom-client-directives',
+    hooks: {
+      'astro:config:setup': ({ addClientDirective }) => {
+        addClientDirective({
+          name: 'visible-only',
+          entrypoint: './src/directives/visible-only.js',
+        })
+      },
+    },
+  }, db()],
+
   vite: {
     ssr: {
       external: ['@11ty/eleventy-img'],
     },
   },
+
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
@@ -34,10 +51,13 @@ export default defineConfig({
       transformers: [transformerNotationDiff()],
     },
   },
+
   image: {
     service: imageService({
       placeholder: 'blurhash',
       fallbackService: 'uploadcare',
     }),
   },
+
+  adapter: vercel(),
 })

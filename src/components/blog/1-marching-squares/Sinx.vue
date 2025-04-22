@@ -8,19 +8,24 @@ const frequency = ref(1)
 const showLines = ref(true)
 const showAxes = ref(false)
 
-
 watch([resolution, frequency], updatePoints)
 
-let points = []
+type Point = {
+  x: number
+  y: number
+}
+
+let points: Point[] = []
 let origin
-let p
+let p: any
 
 function updatePoints() {
   points = []
   let n = resolution.value
   for (let i = 0; i < n + 1; i += 1) {
-    let x = p.width * (i / resolution.value);
-    let y = ((p.height / 2) - 5) * Math.sin(2 * frequency.value * Math.PI * (i / n));
+    let x = p.width * (i / resolution.value)
+    let y =
+      (p.height / 2 - 5) * Math.sin(2 * frequency.value * Math.PI * (i / n))
     points.push(p.createVector(x, y))
   }
 }
@@ -39,18 +44,19 @@ function drawAxes() {
 
   p.fill(255, 255, 0)
   p.textSize(20)
-  p.Text("x", p.width - 10, 20)
-  p.Text("y", 10, -p.height / 2 + 20)
+  p.Text('x', p.width - 10, 20)
+  p.Text('y', 10, -p.height / 2 + 20)
 }
 
-function setup(p5, width, height) {
+function setup(p5: any, width: number, height: number) {
+  console.log('this ran')
   p = p5
-  p.createCanvas(width, height);
+  p.createCanvas(width, height)
   updatePoints()
 }
 
 function draw() {
-  p.translate(0, p.height / 2);
+  p.translate(0, p.height / 2)
   p.scale(1, -1)
   p.background(p.darkTheme ? 0 : 233)
 
@@ -73,70 +79,48 @@ function draw() {
   <br />
   <P5Wrapper :aspectRatio="3 / 16" :setup="setup" :draw="draw">
     <template v-slot="props">
-
       <P5Sketch v-bind="props" />
       <br />
-      <div class="sinx-controls grid grid-cols-2 md:grid-cols-3 place-items-center">
+      <div
+        class="sinx-controls grid grid-cols-2 place-items-center md:grid-cols-3"
+      >
         <div class="text-center">
           <p>Resolution</p>
           <input type="range" min="3" max="99" step="1" v-model="resolution" />
         </div>
         <div class="text-center">
           <p>Frequency</p>
-          <input type="range" min="0.5" max="4" step="0.1" v-model="frequency" />
+          <input
+            type="range"
+            min="0.5"
+            max="4"
+            step="0.1"
+            v-model="frequency"
+          />
         </div>
-        <div class="flex-col w-1/2 hidden md:flex">
-          <div class="text-center flex justify-between items-center">
+        <div class="hidden w-1/2 flex-col md:flex">
+          <div class="flex items-center justify-between text-center">
             <span class="inline">Show Lines</span>
-            <input type="checkbox" v-model="showLines">
+            <input type="checkbox" v-model="showLines" />
           </div>
-          <div class="text-center flex justify-between items-center">
+          <div class="flex items-center justify-between text-center">
             <span>Show Axes</span>
-            <input type="checkbox" v-model="showAxes">
+            <input type="checkbox" v-model="showAxes" />
           </div>
         </div>
-
       </div>
 
-      <div class="w-full md:hidden grid grid-cols-2 place-items-center">
-        <div class="text-center flex justify-between items-center">
-          <span class="inline mr-2">Show Lines</span>
-          <input type="checkbox" v-model="showLines">
+      <div class="grid w-full grid-cols-2 place-items-center md:hidden">
+        <div class="flex items-center justify-between text-center">
+          <span class="mr-2 inline">Show Lines</span>
+          <input type="checkbox" v-model="showLines" />
         </div>
-        <div class="text-center flex justify-between items-center">
-          <span class="inline mr-2">Show Axes</span>
-          <input type="checkbox" v-model="showAxes">
+        <div class="flex items-center justify-between text-center">
+          <span class="mr-2 inline">Show Axes</span>
+          <input type="checkbox" v-model="showAxes" />
         </div>
       </div>
     </template>
   </P5Wrapper>
   <br />
 </template>
-
-<style scoped>
-.loading-dark {
-  animation: pulse 2s infinite;
-  background: #2c2c2c;
-  height: 96px;
-  color: #fff;
-}
-
-.loading {
-  opacity: 1
-}
-
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-    background-color: #333;
-  }
-
-  50% {
-    opacity: 0.5;
-    background-color: #2c2c2c;
-  }
-}
-</style>

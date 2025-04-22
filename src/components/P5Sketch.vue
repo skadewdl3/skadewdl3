@@ -1,41 +1,52 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, defineProps } from 'vue'
 import isDarkTheme from '@/utils/isDarkTheme'
+import { useDark } from '@vueuse/core'
 
 const root = ref(null)
-const element = ref(null)
+const element = ref<HTMLElement | null>(null)
 const load = ref(null)
-const props = defineProps(['setup', 'draw', 'aspectRatio', 'setLoading'])
+const props = defineProps(['setup', 'draw', 'aspectRatio', 'theme'])
+const sketchInitialized = ref(false) // Added this since you were using it
 
-const { setup, draw, setLoading, aspectRatio } = props
-let p
+const { setup, draw, aspectRatio, theme } = props
 
-onMounted(async () => {
+const p5 = await import('p5')
+
+onMounted(() => {
+  if (!element.value) {
+    return
+  }
+
   const width = parseInt(window.getComputedStyle(element.value).width)
   const height = aspectRatio * width
   element.value.style.height = `${height}px`
+  if (element.value) element.value.innerHTML = ''
 
-  const p5 = await import('p5')
-  element.innerHTML = ''
   let sketch = new p5.default((sketch: any) => {
-    sketch.Text = (...args) => {
+    sketch.Text = (...args: any[]) => {
       sketch.scale(1, -1)
       sketch.text(...args)
       sketch.scale(1, -1)
     }
-    sketch.darkTheme = isDarkTheme()
+    sketch.darkTheme = theme
     let p5Setup = () => setup(sketch, width, height)
     let p5Draw = draw
     sketch.setup = p5Setup
     sketch.draw = p5Draw
   }, element.value)
 
-  setLoading && setLoading(false)
+  sketch.setup()
+  sketch.loop()
+  sketchInitialized.value = true
 })
 </script>
 
 <template>
-  <div class="w-full text-black grid place-items-center p5-sketch" ref="element"></div>
+  <div
+    class="p5-sketch grid w-full place-items-center text-black"
+    ref="element"
+  ></div>
 </template>
 
 <style scoped>
@@ -51,9 +62,7 @@ onMounted(async () => {
   z-index: 1;
 }
 
-
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;

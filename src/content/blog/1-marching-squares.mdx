@@ -1,11 +1,14 @@
 ---
-title: 'Marching Squares and Quadtrees - A Primer'
+title: 'Marching Squares - A Primer'
 description: "This blog post, titled 'Marching Squares and Quadtrees - A Primer', provides an introductory exploration into the concepts of Marching Squares and Quadtrees. It aims to demystify these complex algorithms, often used in computer graphics and game development for terrain generation and collision detection. The post breaks down the theory behind these algorithms, their applications, and how they work in tandem. It also includes practical examples and code snippets to help readers understand and implement these algorithms in their own projects. Ideal for both beginners and intermediate programmers looking to expand their knowledge in this area."
 pubDate: 'Jul 27 2024'
 heroImage: 'https://ucarecdn.com/7a0c1056-0ce4-48ac-890b-192598eed3ea/1marchingsquarescover.png'
 tags: ["marching-squares", "quadtrees", "p5.js"]
 ---
 import Sinx from '@blog-components/1-marching-squares/Sinx.vue'
+import Grid from '@blog-components/1-marching-squares/Grid.vue'
+import Grid2 from '@blog-components/1-marching-squares/Grid2.vue'
+import Grid3 from '@blog-components/1-marching-squares/Grid3.vue'
 import Accordion from '@components/Accordion.astro'
 
 
@@ -63,8 +66,8 @@ function setup () {
 function draw() {
   background(220);
   translate(0, height / 2)
-  
-  // D
+
+  // Connect each pair of points with a line
   for (let i = 0; i < points.length - 2; i++) {
     let p1 = points[i]
     let p2 = points[i + 1]
@@ -92,15 +95,12 @@ const equation = x => sin(x) // [!code --]
 const r = 5 // [!code ++]
 const equation = x => sqrt(r**2 - x**2) // [!code ++]
 
-// How often we'll be calculating the value of y
 const resolution = 100
 let points = []
 
 function setup () {
   createCanvas(400, 225)
 
-  // Caluclate the values of x, and y
-  // and store them in the points array
   for (let i = 0; i < resolution; i++) {
     let frac = i / resolution
     let x = width * frac
@@ -112,8 +112,7 @@ function setup () {
 function draw() {
   background(220);
   translate(0, height / 2)
-  
-  // D
+
   for (let i = 0; i < points.length - 2; i++) {
     let p1 = points[i]
     let p2 = points[i + 1]
@@ -125,6 +124,161 @@ function draw() {
 Replace the equation with the one above, and try running the code. You'll notice that it doesn't draw a circle, but instead a weird shape.
 
 ## Contouring
+Clearly, our simplistic approach is not enough to handle *implicit* functions. We need an algorithm, which can handle if a function outputs multiple values. However, thinking about it in an analytical way actually complicates the process. Let's visualize the equation of a circle with the hopes of coming up with a better solution.
+
+Consider the equation of a circle with radius = 5 units:  $x^2 + y^2 = 25$. Let us superimpose a grid onto this circle. Our circle will be centered at the origin $O (0, 0)$.
+
+<Grid client:visible />
+
+You can try playing around with the radius of the circle - it'll change in size as expected.
+
+Now, turn on the **Show Intersections** checkbox to see where the grid lines intersect the circle and try changing the radius. If we focus solely on the squares with intersections, we start to notice some patterns. Do you see them? Try to focus on in what places the circle intersects with the squares of the grid. Sometimes the points of intersection are towards the right side of the square, and sometimes towards the left side. Sometimes, they are in the center.
+
+Our goal is to plot this implicit curve, but as we saw in the previous $y = sin(x)$ example, computers don't work very well with plotting continuous curves. So a crude, but simple approach to discretize the curve would be to turn it into a series of line segments. How about we evaluate each intersection square, and connect the two points where the circle intersects with the square?
+
+<Grid2 client:visible />
+You can see that the circle looks quite blocky, but it's a good start. It's certainly better than our previous approach. However, there is a caveat with this approach. As the radius of the circle reduces, the blockiness becomes more pronounced. This is because the circle is being approximated by a series of line segments, and the more segments we use, the more accurate the approximation becomes. Similarly, you can imagine that as we reduce the size of the squares (i.e. increase the resolution of the grid) the blockiness becomes less pronounced. From now on, we'll be refering to these lines as *contour lines*.
+
+While it's not critical to our purpose, if you're interested, here's the code used to calculate these intersection lines. I encourage you to read it, since it'll be beneficial in appraoching Marching Squares,
+
+
+<details>
+<summary>Intersection Lines Approach Code</summary>
+
+```ts
+
+type Point = {
+  x: number
+  y: number
+}
+
+// Helper function to find intersections between a circle and a square
+function findCircleSquareIntersections(
+  circleCenter: Point,
+  radius: number,
+  squareTopLeft: Point,
+  squareSize: number
+): Point[] {
+  const intersections: Point[] = []
+
+  // Check each edge of the square for intersections with the circle
+
+  // Bottom edge: y = squareTopLeft.y, x from squareTopLeft.x to squareTopLeft.x + squareSize
+  findCircleLineIntersections(
+    circleCenter,
+    radius,
+    { x: squareTopLeft.x, y: squareTopLeft.y },
+    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y },
+    intersections
+  )
+
+  // Right edge: x = squareTopLeft.x + squareSize, y from squareTopLeft.y to squareTopLeft.y + squareSize
+  findCircleLineIntersections(
+    circleCenter,
+    radius,
+    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y },
+    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y + squareSize },
+    intersections
+  )
+
+  // Top edge: y = squareTopLeft.y + squareSize, x from squareTopLeft.x to squareTopLeft.x + squareSize
+  findCircleLineIntersections(
+    circleCenter,
+    radius,
+    { x: squareTopLeft.x, y: squareTopLeft.y + squareSize },
+    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y + squareSize },
+    intersections
+  )
+
+  // Left edge: x = squareTopLeft.x, y from squareTopLeft.y to squareTopLeft.y + squareSize
+  findCircleLineIntersections(
+    circleCenter,
+    radius,
+    { x: squareTopLeft.x, y: squareTopLeft.y },
+    { x: squareTopLeft.x, y: squareTopLeft.y + squareSize },
+    intersections
+  )
+
+  return intersections
+}
+
+// Find intersections between a circle and a line segment
+function findCircleLineIntersections(
+  circleCenter: Point,
+  radius: number,
+  lineStart: Point,
+  lineEnd: Point,
+  intersections: Point[]
+): void {
+  // Convert line to parametric form: point = start + t * (end - start)
+  const dx = lineEnd.x - lineStart.x
+  const dy = lineEnd.y - lineStart.y
+
+  // Solve quadratic equation for t at intersection points
+  const a = dx * dx + dy * dy
+  const b =
+    2 *
+    (dx * (lineStart.x - circleCenter.x) + dy * (lineStart.y - circleCenter.y))
+  const c =
+    (lineStart.x - circleCenter.x) * (lineStart.x - circleCenter.x) +
+    (lineStart.y - circleCenter.y) * (lineStart.y - circleCenter.y) -
+    radius * radius
+
+  const discriminant = b * b - 4 * a * c
+
+  if (discriminant < 0) {
+    // No intersections
+    return
+  }
+
+  // We have intersection(s)
+  const t1 = (-b + Math.sqrt(discriminant)) / (2 * a)
+  const t2 = (-b - Math.sqrt(discriminant)) / (2 * a)
+
+  // Check if intersection point is on the line segment (t in [0, 1])
+  if (t1 >= 0 && t1 <= 1) {
+    intersections.push({
+      x: lineStart.x + t1 * dx,
+      y: lineStart.y + t1 * dy,
+    })
+  }
+
+  if (t2 >= 0 && t2 <= 1) {
+    intersections.push({
+      x: lineStart.x + t2 * dx,
+      y: lineStart.y + t2 * dy,
+    })
+  }
+}
+```
+
+</details>
+<br />
+
+
+
+This approach finds all intersections squares (in $O(n^2)$ time) and checks all four edges of each intersection square, and calculates the intersection points ($O(1)$ time). It also requires special functions to calculate the intersections between a square and circle. Now imagine if we had some other graph, maybe a complicated curve like $x\times sin(x) + y \times sin(y) = 0$ - it would be a nightmare to make a function to calculate the intersections for that. This leads us to two critical questions, which will lead us to marching squares:
+
+1. Is there a simpler way to find which grid squares intersect?
+2. Can we identify a pattern to the lines which connect the intersection points?
+
+
+## Marching Squares
+
+Now, we're just two questions away from our goal. Let's try to answer each one.
+
+#### How to find intersections?
+The approach we used in the previous section solved a quadratic equation to find the intersection points. This approach was specific to a circle, which means it won't generalize well to more complicated/different graphs. Also, each graph would require a different method of calculating the intersection points - hence, this approach of mathematically computing intersection points is not viable.
+
+Let us shed our pechant for calculating exact intersection points, and embrace some approximation. Let's say we only want to find grid squares where the curve intersects the grid. This means that we will not consider:
+1. Squares that are completely outside the curve.
+2. Squares that are completely inside the curve.
+
+For the sake of exploration, let us assign a value of **1** to every point inside the curve, and a value of **0** to every point outside the curve. Let us mark these points accordingly.
+
+<Grid2 client:visible />
+
+#### How to calculate contour lines?
 
 Marching Squares is a computer graphics algorithm used for contouring in two-dimensional scalar fields. It's often used in terrain generation in games, where it helps create more realistic and complex landscapes.
 

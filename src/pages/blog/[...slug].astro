@@ -1,20 +1,87 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { type CollectionEntry, getCollection } from 'astro:content'
+import BlogPost from '../../layouts/BlogPost.astro'
+import Comments from '../../components/site/Comments.astro'
 
-export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post) => ({
-		params: { slug: post.slug },
-		props: post,
-	}));
+export const prerender = false
+
+const { slug } = Astro.params
+const post = await getCollection('blog').then((posts) =>
+  posts.find((post) => post.slug === slug)
+)
+
+if (!post) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not found',
+  })
 }
-type Props = CollectionEntry<'blog'>;
+type Props = CollectionEntry<'blog'>
 
-const post = Astro.props;
-const { Content } = await post.render();
+const { Content } = await post.render()
 ---
 
 <BlogPost {...post.data}>
-	<Content />
+  <Content />
+  <Comments slug={slug} slot="comments" server:defer>
+    <div class="loading-skeleton" slot="fallback">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+  </Comments>
 </BlogPost>
+<style>
+  .loading-skeleton {
+    padding: 1rem 0;
+  }
+  .skeleton-line {
+    height: 1rem;
+    background: linear-gradient(
+      90deg,
+      var(--skeleton-start, #f0f0f0),
+      var(--skeleton-middle, #e0e0e0),
+      var(--skeleton-start, #f0f0f0)
+    );
+    background-size: 200% 100%;
+    animation:
+      loading 1.5s infinite ease-in-out,
+      pulse 2s infinite ease-in-out;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .skeleton-line:last-child {
+    width: 75%;
+  }
+
+  :root {
+    --skeleton-start: #f0f0f0;
+    --skeleton-middle: #e0e0e0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --skeleton-start: #2a2a2a;
+      --skeleton-middle: #333333;
+    }
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+</style>

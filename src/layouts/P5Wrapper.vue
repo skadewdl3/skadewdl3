@@ -1,48 +1,65 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, defineProps, useSlots } from 'vue'
+import { useDark } from '@vueuse/core'
 
-const root = ref(null)
-const element = ref(null)
-const load = ref(null)
+const root = ref<HTMLElement | null>(null)
+const element = ref<HTMLElement | null>(null)
+const load = ref<HTMLElement | null>(null)
 const loading = ref(true)
 const error = ref(null)
-const darkTheme = ref(false)
+const isDark = useDark()
 
-const { setup, draw, aspectRatio } = defineProps(['setup', 'draw', 'aspectRatio'])
+watch(isDark, () => {
+  console.log(isDark.value)
+})
+
+const { setup, draw, aspectRatio } = defineProps([
+  'setup',
+  'draw',
+  'aspectRatio',
+])
 
 onMounted(async () => {
-  darkTheme.value = localStorage.theme == 'light' ? false : (localStorage.theme == 'dark' || window.matchMedia("(prefers-color-scheme: dark)").matches);
-  console.log(darkTheme.value)
-  element.value = root.value.querySelector('.p5-sketch')
-
+  if (!root.value || !element.value || !load.value) return
   const height = window.getComputedStyle(root.value).height
-
   load.value.querySelector('div').style.height = height
   load.value.style.height = height
 })
 
 let unwatch = watch(loading, () => {
-  if (loading) return;
+  if (loading || !load.value) return
 
   // @ts-ignore
-  load.value.querySelector('div')?.classList.remove('loading-dark', 'loading-light')
+  load.value
+    .querySelector('div')
+    ?.classList.remove('loading-dark', 'loading-light')
   load.value.classList.remove('loading')
   unwatch()
 })
-
 </script>
 
 <template>
   <div class="relative" ref="root">
-    <div class="absolute group opacity-0 z-[-1] w-full transition-all" ref="load"
-      :class="{ 'loading': loading, 'bg-[#2c2c2c]': darkTheme, 'bg-[#ccc]': !darkTheme }">
-      <div class="grid place-items-center group-[.loading]:opacity-100 opacity-0 transition-all w-full"
-        :class="{ 'loading-dark text-neutral-300': darkTheme, 'loading-light text-black': !darkTheme }">
-        <p>Loading animation...</p>
-      </div>
-    </div>
-    <slot :setLoading="x => loading = x" :setError="x => error = e" :aspectRatio="aspectRatio" :setup="setup"
-      :draw="draw" :loading="loading" ref="element" />
+    <Suspense>
+      <slot
+        :aspectRatio="aspectRatio"
+        :setup="setup"
+        :draw="draw"
+        :theme="isDark"
+        ref="element"
+      />
+      <template #fallback>
+        <div
+          class="grid w-full place-items-center opacity-0 transition-all group-[.loading]:opacity-100"
+          :class="{
+            'loading-dark text-neutral-300': isDark,
+            'loading-light text-black': !isDark,
+          }"
+        >
+          <p>Loading animation...</p>
+        </div>
+      </template>
+    </Suspense>
   </div>
 </template>
 
@@ -52,7 +69,6 @@ let unwatch = watch(loading, () => {
   background: #2c2c2c;
   height: 96px;
 }
-
 
 .loading-light {
   animation: pulseLight 2s infinite;
@@ -65,9 +81,7 @@ let unwatch = watch(loading, () => {
   z-index: 1;
 }
 
-
 @keyframes pulseLight {
-
   0%,
   100% {
     opacity: 1;
@@ -81,7 +95,6 @@ let unwatch = watch(loading, () => {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;

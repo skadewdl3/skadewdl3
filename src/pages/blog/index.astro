@@ -46,28 +46,44 @@ posts.forEach((post) => {
             <div class="flex flex-col">
               <h2 class="mb-8 font-bold text-black dark:text-white">{year}</h2>
               <div class="flex flex-col gap-4">
-                {postByYear[parseInt(year)].map((post: Post) => (
-                  <div class="flex justify-between gap-2 border-b pb-4">
-                    <div class="flex flex-col gap-4">
-                      <FormattedDate date={post.data.pubDate} />
-                      <a class="text-lg font-bold" href={`/blog/${post.slug}`}>
-                        {post.data.title}
-                      </a>
-                      <div class="flex gap-2">
-                        {post.data.tags?.map((i: string) => {
-                          return <TagLink tag={i} />
-                        })}
+                {postByYear[parseInt(year)].map((post: Post) => {
+                  const maxTags = 3
+                  const visibleTags = post.data.tags?.slice(0, maxTags) || []
+                  const hiddenTagsCount = post.data.tags
+                    ? post.data.tags.length - maxTags
+                    : 0
+
+                  return (
+                    <div class="flex flex-col gap-4 border-b pb-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div class="flex w-[90%] flex-1 flex-col gap-2 lg:w-[70%]">
+                        <FormattedDate date={post.data.pubDate} />
+                        <a
+                          class="overflow-hidden truncate text-ellipsis whitespace-nowrap text-lg font-bold"
+                          href={`/blog/${post.slug}`}
+                        >
+                          {post.data.title}
+                        </a>
+                        <div class="flex flex-wrap gap-2">
+                          {visibleTags.map((tag: string) => (
+                            <TagLink tag={tag} />
+                          ))}
+                          {hiddenTagsCount > 0 && (
+                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                              +{hiddenTagsCount} more
+                            </span>
+                          )}
+                        </div>
                       </div>
+                      <a href={`/blog/${post.slug}`} class="shrink-0">
+                        <img
+                          src={post.data.heroImage as string}
+                          alt=""
+                          class="h-24 w-40 border border-gray-200 bg-contain object-cover"
+                        />
+                      </a>
                     </div>
-                    <a href={`/blog/${post.slug}`}>
-                      <img
-                        src={post.data.heroImage as string}
-                        alt=""
-                        class="h-24 min-w-40 max-w-40 border border-gray-200 bg-contain"
-                      />
-                    </a>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           ))

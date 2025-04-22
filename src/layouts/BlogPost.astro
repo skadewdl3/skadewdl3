@@ -10,6 +10,7 @@ import 'katex/dist/katex.min.css'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
+import Comments from '../components/Comments.astro'
 
 type Props = CollectionEntry<'blog'>['data']
 
@@ -19,6 +20,12 @@ const { title, description, pubDate, heroImage, tags, comments } = Astro.props
 <html lang="en" class="dark">
   <head>
     <BaseHead title={title} description={description} />
+    <script is:inline>
+      const isDarkMode = localStorage.getItem('theme')
+      if (isDarkMode) {
+        document.querySelector('html').classList.add('dark')
+      }
+    </script>
   </head>
 
   <body
@@ -74,35 +81,7 @@ const { title, description, pubDate, heroImage, tags, comments } = Astro.props
         </div>
         <hr class="my-4" />
 
-        <h1>Comments</h1>
-
-        <!-- <div class="mb-12 flex w-full flex-col items-center justify-center"> -->
-        <!--   <textarea -->
-        <!--     class="w-full rounded-md border-2 border-solid border-white/50 bg-transparent px-4 py-2" -->
-        <!--     placeholder="Your thoughts"></textarea> -->
-        <!--   <button class="grid place-self-end">Post</button> -->
-        <!-- </div> -->
-        <div>
-          {
-            comments && (
-              <ul class="flex flex-col gap-4">
-                {comments
-                  .sort((a, b) => new Date(b.date) - new Date(a.date))
-                  .map((comment) => (
-                    <div class="items-left mx-4 flex flex-col justify-start border-2 border-solid border-transparent border-l-white/40 px-4">
-                      <div class="flex items-center justify-between">
-                        <span class="text-lg font-bold">{comment.author}</span>
-                        <span class="text-sm text-white/50">
-                          {dayjs().to(dayjs(comment.date))}
-                        </span>
-                      </div>
-                      <span class="text-sm">{comment.content}</span>
-                    </div>
-                  ))}
-              </ul>
-            )
-          }
-        </div>
+        <slot name="comments" />
       </article>
     </main>
     <Footer />
