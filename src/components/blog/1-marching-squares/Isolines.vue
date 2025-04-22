@@ -198,11 +198,13 @@ function drawCirclePoints() {
     <template v-slot="props">
       <P5Sketch v-bind="props" />
       <br />
-      <br />
       <div class="grid grid-cols-2 place-items-center gap-4">
         <div class="flex w-full flex-col items-center justify-center gap-4">
           <MathRenderer
-            :input="`x^2 + y^2 - (${roundToNthDecimal(radius / 50, 2)})^2 = ${roundToNthDecimal(elevation / 50, 2)}`"
+            :input="`x^2 + y^2 -
+            (${roundToNthDecimal(radius / 50, 2)})^2
+            = ${roundToNthDecimal(elevation / 50, 2)}
+            `"
             :block="true"
           />
 
@@ -222,7 +224,7 @@ function drawCirclePoints() {
           </div>
         </div>
 
-        <div class="w-full">
+        <div class="grid w-full">
           <div class="w-full text-center">
             <p>Circle Radius = {{ radius / 50 }}</p>
             <input
@@ -235,7 +237,7 @@ function drawCirclePoints() {
             />
           </div>
 
-          <div class="w-full text-center">
+          <div class="mt-8 w-full text-center">
             <p>Elevation = {{ elevation / 50 }}</p>
             <input
               type="range"

@@ -10,6 +10,8 @@ import Grid from '@blog-components/1-marching-squares/Grid.vue'
 import Grid2 from '@blog-components/1-marching-squares/Grid2.vue'
 import Grid3 from '@blog-components/1-marching-squares/Grid3.vue'
 import Isolines from '@blog-components/1-marching-squares/Isolines.vue'
+import Cases from '@blog-components/1-marching-squares/Cases.vue'
+import Case from '@blog-components/1-marching-squares/Case.vue'
 import Accordion from '@components/Accordion.astro'
 
 
@@ -144,7 +146,7 @@ While it's not critical to our purpose, if you're interested, here's the code us
 
 
 <details>
-<summary>Intersection Lines Approach Code</summary>
+  <summary>Intersection Lines Approach Code</summary>
 
 ```ts
 
@@ -301,9 +303,9 @@ $$
 And we can mark every point as follows:
 $$
 \begin{cases}
-  \text{Inside} & \text{if } f(x, y) - c < 0 \\
-  \text{Outside} & \text{if } f(x, y) - c > 0 \\
-  \text{On} & \text{if } f(x, y) - c = 0
+\text{Inside} & \text{if } f(x, y) - c < 0 \\
+\text{Outside} & \text{if } f(x, y) - c > 0 \\
+\text{On} & \text{if } f(x, y) - c = 0
 \end{cases}
 $$
 
@@ -319,41 +321,316 @@ Everyline "isoline" in this image connects places with the exact same elevation.
 
 <Isolines client:visible />
 
-In the general case, when we have a function $f(x, y) = c$, the constant c is called the **isovalue**. The isoline represents all the points where the function equals exactly this isovalue. For our circle example, the isoline is where $x^2 + y^2 = r^2$, so $r^2$ is our isovalue.
+In the general case, when we have a function $f(x, y) = c$, the constant c is called the **isovalue**. The isoline represents all the points where the function equals exactly this isovalue. For our circle example, the equation was $x^2 + y^2 = r^2$
 
-By tracking where values change from inside to outside across grid cells, we can approximate where the isoline passes through. This is the fundamental idea behind the Marching Squares algorithm - we're "marching" through squares in our grid, checking the configuration of inside/outside points, and drawing line segments to approximate the isoline.
+Comparing this to $f(x, y) = c$, we can infer that
+$$
+\begin{align*}
+& \implies f(x, y) = x^2 + y^2 - r^2 \\
+& \implies c = 0
+\end{align*}
+$$
 
-What makes this approach powerful is that we're no longer limited to shapes with analytical solutions. Whether we're dealing with a circle, a complex mathematical function, or even terrain data from a height map, we can use the same algorithm to extract meaningful contours.
+You might wonder about why we're talking about this $c = 0$ value. It might not make much sense in 2D, but when we switch to 3D and we can see that $c$ represents the height of the surface at any given point. This is because the equation $f(x, y) = c$ describes a surface in 3D space, where $z = f(x, y)$. In the topographic map above, $c$ i.e. the elevation takes a continuous range of values.
 
-Let's extend this to visualize multiple isolines at different values. Rather than just binary inside/outside, we could assign a continuous range of scalar values to our field and extract multiple contour lines at different isovalues. This is exactly how topographic maps work - each contour line represents points of equal elevation.
+Now, think back to when we were discussing marking values inside the circle with a $1$ and values outside the circle with a $0$. We did this to assign an isovalue to the contour created by the circle. This isovalue can be anything - however using $1$s and $0$s gives us another advantage in terms of representation - can you think what it is? Try thinking about how we can represent things using just $1$s and $0$s.
+
+That's right - it's a binary representation. Now, we can cleanly define our intersections as follows:
+1. Grid squares with all four corner values as $0$s lie completely outside the contour.
+2. Grid squares with all four corner values as $1$s lie completely inside the contour.
+
+This also means, that since the contour doesn't pass through these squares, we can simply ignore them. Finally, we know that squares with mixed corner values must intersect the contour.
 
 #### How to calculate contour lines?
 
-Marching Squares is a computer graphics algorithm used for contouring in two-dimensional scalar fields. It's often used in terrain generation in games, where it helps create more realistic and complex landscapes.
+Now that we've identified which grid squares intersect our contour line, we need to determine exactly how the contour passes through each of these squares. This is where the **Marching Squares** algorithm comes into play.
 
-The algorithm works by dividing the terrain into a grid of squares. Each corner of a square is assigned a value based on the height of the terrain at that point. The algorithm then determines where the contour line should pass through the square, creating a more detailed and realistic terrain.
+The key insight that the Marching Squares algorithm provides is a systematic way to determine how a contour line traverses through a grid square using the binary representation shennanigans we did before.
 
-```rust
-fn main () {
-  println!("Hello World")
+We assign each square a unique binary code based on the values of its four corners. We start from the bottom-left corner and move anticlockwise around the square, assigning a binary digit for each corner value. For example, a square with corners $(0, 0, 1, 1)$ would be assigned the binary code $0111$ i.e. $7$ in decimal. Since there are 4 corners, we geta  4 digit binary code - which means we assign numbers from 0 to 15 (i.e. a total of 16 cases).
+
+<Cases client:visible />
+
+Try playing around with this animation to get a feel for how this process works. You can see how the binary codes are assigned to each square using the **All 16 Cases** option from the dropdown. You can also explore **Perlin Noise**, **Radial field** and **Wave field** from the dropdown (remember - these are just different functions which leads to different scalar fields).
+
+To have some more fun, click on the **Custom** option and draw your own scalar field! You'll be able to see the binary values change in real time. Also, increase the resolution to see how the drawn curve looks *smoother*.
+
+Alright, now let's get back to the nitty-gritty of the algorithm. Hoepfully, you've got a good feel for how these contour lines are being calculated. Let's make this notion of "calculating" contour lines a bit more concrete now.
+
+
+#### Lookup Table
+The Marching Squares algorithm provides us a lookup table - directly giving us the contour line for each of the 16 cases. This table is precomputed - which makes this approach **much** faster than the quadratic equation solving approach.
+
+Let's calculate the lookup table values for a couple of cases manually.
+
+
+##### Case 0: All corners are outside (0000)
+
+<div class="grid grid-cols-2">
+<div >
+    In this case, all four corners have a value of 0, meaning they're all outside our contour. Since no corner is inside, there's no contour line passing through this square.
+
+    $$\text{Case } 0000: \text{ No contour lines}$$
+</div>
+
+<div>
+    <Case client:visible caseNumber={0} />
+</div>
+</div>
+
+##### Case 1: Only bottom-left corner is inside (0001)
+<div class="grid grid-cols-2 gap-2">
+
+<div>
+    Here, only the bottom-left corner has a value of 1, while all others are 0. The contour must pass through the bottom edge and the left edge of the square.
+
+    Let's denote the bottom-left corner as $(x_0, y_0)$, the bottom-right as $(x_1, y_0)$, the top-right as $(x_1, y_1)$, and the top-left as $(x_0, y_1)$.
+</div>
+
+<div>
+    <Case client:visible caseNumber={1} />
+</div>
+
+</div>
+
+The contour line crosses the bottom edge somewhere between $(x_0, y_0)$ and $(x_1, y_0)$. With linear interpolation, the exact point depends on the actual values at these corners, but for our binary case, we can place it halfway:
+
+$$
+\text{Bottom edge intersection} = \left(\frac{x_0 + x_1}{2}, y_0\right)
+$$
+
+Similarly, the contour crosses the left edge between $(x_0, y_0)$ and $(x_0, y_1)$:
+
+$$
+\text{Left edge intersection} = \left(x_0, \frac{y_0 + y_1}{2}\right)
+$$
+
+The contour line for Case 1 connects these two points:
+
+$$
+\text{Case } 0001: \text{ Line from } \left(\frac{x_0 + x_1}{2}, y_0\right) \text{ to } \left(x_0, \frac{y_0 + y_1}{2}\right)
+$$
+
+
+##### Case 5: The ambiguous case (0101)
+Here, the bottom-left and top-right corners are inside (value 1), while the other two are outside (value 0). This creates an ambiguity: should the contour connect left-to-top or bottom-to-right?
+
+<div class="grid grid-cols-2 gap-2">
+
+<div>
+
+The intersections are:
+$$
+\text{Left Edge}: \left(x_0, \frac{y_0 + y_1}{2}\right)
+$$
+$$
+\text{Bottom Edge}: \left(\frac{x_0 + x_1}{2}, y_0\right)
+$$
+$$
+\text{Right Edge}: \left(x_1, \frac{y_0 + y_1}{2}\right)
+$$
+$$
+\text{Top Edge}: \left(\frac{x_0 + x_1}{2}, y_1\right)
+$$
+
+</div>
+
+<div>
+
+<Case caseNumber={5} client:visible />
+
+</div>
+
+</div>
+
+
+As mentioned earlier, there are two possible ways to connect these points:
+1. Connect left to top and bottom to right, making two contour lines:
+$$
+\text{Line 1: } \left(x_0, \frac{y_0 + y_1}{2}\right) \text{ to } \left(\frac{x_0 + x_1}{2}, y_1\right)
+$$
+$$
+\text{Line 2: } \left(\frac{x_0 + x_1}{2}, y_0\right) \text{ to } \left(x_1, \frac{y_0 + y_1}{2}\right)
+$$
+
+2. Connect left to bottom and top to right, making two contour lines:
+$$
+\text{Line 1: } \left(x_0, \frac{y_0 + y_1}{2}\right) \text{ to } \left(\frac{x_0 + x_1}{2}, y_0\right)
+$$
+$$
+\text{Line 2: } \left(\frac{x_0 + x_1}{2}, y_1\right) \text{ to } \left(x_1, \frac{y_0 + y_1}{2}\right)
+$$
+
+A similar ambiguity occurs with case $5 (0101)$. To resolve this ambiguity, there are quite a few ways - however they are out of scope of this blog post. Maybe I'll cover them in a followup. But for now, let us say that we resolve this ambiguity in the simplest way i.e. to always connect diagonally opposite corners.
+
+
+
+$$
+\text{For Case 5 (0101): Always connect left-to-top and bottom-to-right}
+$$
+$$
+\text{For Case 10 (1010): Always connect left-to-bottom and top-to-right}
+$$
+
+This approach is straightforward and efficient, but it may produce contour lines that don't accurately represent the underlying data, especially if the true contour follows a different pattern.
+
+##### Case 15: All corners are inside (1111)
+<div class="grid grid-cols-2 gap-2">
+
+<div>
+
+    Ans finally, another easy case where all four corners have a value of 1, meaning they're all inside our contour. Since no corner is outside, there's no contour line passing through this square.
+
+  $$\text{Case } 1111: \text{ No contour lines}$$
+
+</div>
+
+<div>
+
+<Case caseNumber={15} client:visible />
+
+</div>
+
+</div>
+
+Now that you have an idea of how we calculate the contours for these cases, here's the complete lookup table.
+
+<img src="https://www.baeldung.com/wp-content/uploads/sites/4/2022/06/diagram-20220522-4.png" style="margin: 50px auto;" />
+
+And here's a function which takes in the four corners of the grid square, and outputs the coordinates of the contour.
+
+```ts
+
+type Point = {
+  x: number;
+  y: number;
 }
+
+function marchingSquaresLookup(bottomLeft: Point, bottomRight: Point, topRight: Point, topLeft: Point, caseIndex: number): Point[] | Point[][] {
+  // Calculate the midpoints of the edges
+  const leftMid: Point = {
+    x: bottomLeft.x,
+    y: (bottomLeft.y + topLeft.y) / 2
+  };
+  const bottomMid: Point = {
+    x: (bottomLeft.x + bottomRight.x) / 2,
+    y: bottomLeft.y
+  };
+  const rightMid: Point = {
+    x: bottomRight.x,
+    y: (bottomRight.y + topRight.y) / 2
+  };
+  const topMid: Point = {
+    x: (topLeft.x + topRight.x) / 2,
+    y: topLeft.y
+  };
+
+  // Lookup table - returns array of points defining contour lines
+  switch (caseIndex) {
+    case 0: return []; // No contour (outside the shape)
+    case 1: return [bottomMid, leftMid];
+    case 2: return [bottomMid, rightMid];
+    case 3: return [leftMid, rightMid];
+    case 4: return [rightMid, topMid];
+    case 5: return [[leftMid, topMid], [bottomMid, rightMid]] // ambiguous case
+    case 6: return [bottomMid, topMid];
+    case 7: return [leftMid, topMid];
+    case 8: return [leftMid, topMid];
+    case 9: return [bottomMid, topMid];
+    case 10: return [[leftMid, bottomMid], [rightMid, topMid]]; // ambiguous case
+    case 11: return [rightMid, topMid];
+    case 12: return [leftMid, rightMid];
+    case 13: return [bottomMid, rightMid];
+    case 14: return [bottomMid, leftMid];
+    case 15: return []; // no contour (inside the shape)
+  }
+}
+
 ```
 
-## Quadtrees
+## Marching Squares!
+Alright, now we're all prepped up and ready to implement Marching Squares. Here's the link to a [p5.js sketch](https://editor.p5js.org/skadewdle/sketches/c9x7BbAG1) for the same. Oh, and you might have already seen this - but here's the output of the sketch (yes it's the same animation as above but I'm really proud of it so here it is again).
 
-Quadtrees, on the other hand, are a tree data structure used in computer graphics and game development for spatial partitioning. They're often used for collision detection, where they help determine which objects might collide without having to check every single object.
+<Cases client:visible />
 
-The algorithm works by dividing the space into four quadrants. Each quadrant can be further divided into four smaller quadrants, and so on. This creates a tree structure where each node represents a quadrant of space, making it easier to check for potential collisions.
+#### Advantages
 
-```python
-# Pseudocode for Quadtrees
-def quadtree(space):
-    divide space into quadrants
-    for each quadrant:
-        if quadrant contains more than one object:
-            quadtree(quadrant)
-```
+1. **Efficiency**: Marching Squares is computationally efficient, using a precomputed lookup table to quickly determine contour patterns without complex mathematical calculations at runtime.
+
+2. **Simplicity**: The algorithm is conceptually straightforward and relatively easy to implement, making it accessible even for those without extensive mathematical backgrounds.
+
+3. **Parallelizability**: Each grid cell is processed independently, making the algorithm highly parallelizable and suitable for GPU implementation.
+
+4. **Resolution Control**: By adjusting the grid resolution, you can control the trade-off between performance and contour detail.
+
+
+#### Drawbacks
+Despite its many advantages, Marching Squares does have several limitations:
+
+1. **Ambiguity Issues**: As we've discussed, certain configurations (cases 5 and 10) are ambiguous and require additional resolution strategies, which can lead to inconsistencies if not handled properly.
+
+2. **Approximation Errors**: Marching Squares produces an approximation of the true contour. For highly curved or intricate contours, this approximation may significantly deviate from the exact solution, especially with coarse grids.
+
+3. **Linear Interpolation Limitations**: The algorithm typically uses linear interpolation to determine intersection points along grid edges, which can smooth out sharp features in the underlying data.
+
+4. **Topological Issues**: In some cases, particularly with complex or rapidly changing scalar fields, Marching Squares might produce contours with incorrect topology, such as missing small features or creating spurious connections.
+
+5. **And more :(**: For large datasets, memory overhead can be significant, and the algorithm may generate visual artifacts with inadequate grid resolution. Small features between grid points might be missed entirely, and boundary handling requires special care to avoid artifacts. Additionally, small changes in the isovalue parameter can dramatically alter the contour's shape and topology.
+
+
+#### Further Considerations
+
+##### Quadtrees for Adaptive Resolution
+
+One of the most effective optimization techniques is the use of quadtrees to create an adaptive grid:
+
+<img src="https://lh5.googleusercontent.com/proxy/BMlwN3Ca9OT-35NpTbr-SpjIo3dN_B7Z9ugJcOIhBLDlLZtmVUJyOfO3dJ2K5nGWvctsVHtZsyOEb4ZYbYCVym10lH9MASAN2KQUwA" style="margin: 50px auto;" />
+
+
+Quadtrees recursively subdivide the domain into quarters, allowing for:
+
+- Higher resolution in areas with complex contour behavior
+- Lower resolution in areas with simple or no contours
+- Significant reduction in the number of grid cells processed
+
+The computational savings can be substantial, especially when contours occupy only a small portion of the domain. I originally planned to cover Quadtrees in this post, however seeing how long this one became, I decided to focus on the core algorithm and leave the advanced topics for future posts. I am currently working on a separate post dedicated to Quadtrees and their application in contour generation.
+
+##### Multi-threading and Parallelization
+
+The Marching Squares algorithm is inherently parallelizable since each grid cell can be processed independently:
+
+- Divide the grid into sections and process each section on a different thread
+- Use GPU acceleration via compute shaders for massive parallelism
+- Implement a work-stealing pattern for load balancing when cell processing times vary
+
+On modern hardware, parallel implementations can achieve order-of-magnitude speedups compared to sequential versions.
+
+
+##### Marching Cubes (3D)
+
+The natural extension of Marching Squares to 3D is the Marching Cubes algorithm, which generates isosurfaces (3D contours) from volumetric data:
+
+- Each cube has 8 vertices, resulting in $2^8 = 256$ possible configurations
+- These can be reduced to 15 base cases using symmetry
+- The algorithm outputs triangles that form the isosurface mesh
+
+<img style="margin: 50px auto;" src="https://www.researchgate.net/publication/257797896/figure/fig1/AS:451512431321088@1484660360107/llustration-of-the-15-basic-cases-of-the-marching-cubes-technique-The-green-vertices-are.png" />
+
+It is used in Medical imaging (CT, MRI visualization), Visualization of 3D scalar fields (like Desmos), Games (for terrain generation) and more!
+
+##### Dual Contouring
+Dual Contouring improves upon traditional Marching Squares/Cubes by:
+
+1. Generating vertices within cells rather than on edges
+2. Preserving sharp features like corners and edges
+3. Using Hermite data (function values and gradients)
+4. Creating higher-quality contours with fewer elements
+
+This approach produces contours that better preserve the features of the original scalar field, particularly when the field contains sharp transitions.
+
 
 ## Conclusion
 
-Marching Squares and Quadtrees are powerful tools in computer graphics and game development. Understanding these algorithms and how they work together can help you create more complex and efficient games. So, start experimenting with these algorithms and see what you can create!
+And there you have it - that's Marching Squares (well, at least the basics of it). When I learnt this algorithm, I had quite a rough journey understanding contours, isovalues and had to go through a lot of blog posts and videos (a lot of which you can find in the references).
+
+All of this spurred from a sudden urge to make a [Manim](https://www.manim.community/) alternative which could completely work on the web - and [this is how it turned out](https://animweb.vercel.app/animate). Be that as it may, I hope you liked this post. This was my attempt at explaining Marching Squares, the way I'd have liked to learn it. Hopefully, you enjoyed it. Thanks for reading!
