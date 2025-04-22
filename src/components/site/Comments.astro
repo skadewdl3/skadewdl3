@@ -28,7 +28,7 @@ let likes = numbro(likesCount).format({ average: true })
 </script>
 
 <div class="flex items-center justify-between">
-  <h1>{likes} people liked this post</h1>
+  <h1>{likes} {likesCount > 1 ? 'people' : 'person'} liked this post</h1>
   <button
     class="like-btn flex items-center justify-center gap-2 rounded text-gray-800 transition-colors hover:underline dark:text-gray-200"
   >
@@ -48,21 +48,27 @@ let likes = numbro(likesCount).format({ average: true })
 </div>
 <div class="space-y-0">
   {
-    comments.map((comment, index) => (
-      <div
-        class={`p-4 ${index > 0 ? 'mt-4 border-t border-gray-200 px-4 pb-4 pt-4 dark:border-neutral-700' : ''}`}
-      >
-        <div class="font-bold text-gray-900 dark:text-gray-100">
-          {comment.name}
+    comments.length > 0 ? (
+      comments.map((comment, index) => (
+        <div
+          class={`p-4 ${index > 0 ? 'mt-4 border-t border-gray-200 px-4 pb-4 pt-4 dark:border-neutral-700' : ''}`}
+        >
+          <div class="font-bold text-gray-900 dark:text-gray-100">
+            {comment.name}
+          </div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            {comment.createdAt.toLocaleDateString()}
+          </div>
+          <div class="mt-2 text-gray-800 dark:text-gray-200">
+            {comment.message}
+          </div>
         </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          {comment.createdAt.toLocaleDateString()}
-        </div>
-        <div class="mt-2 text-gray-800 dark:text-gray-200">
-          {comment.message}
-        </div>
-      </div>
-    ))
+      ))
+    ) : (
+      <p class="text-center text-gray-500 dark:text-neutral-400">
+        No comments yet :(
+      </p>
+    )
   }
 </div>
 <CommentDialog client:idle slug={slug} />

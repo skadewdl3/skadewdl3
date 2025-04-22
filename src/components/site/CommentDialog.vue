@@ -30,6 +30,7 @@ const comment = ref({
   email: '',
   message: '',
   createdAt: new Date().toISOString().split('T')[0], // Default to today's date
+  likeBlog: false, // Add like blog checkbox
 })
 
 const closeDialog = () => {
@@ -45,17 +46,33 @@ const submitComment = async () => {
     return
   }
 
+  let { likeBlog, ...data } = comment.value
+
   res = await actions.addComment({
-    ...comment.value,
+    ...data,
     slug: props.slug,
   })
 
   if (res.error) {
     error.value = res.error.message
-  } else {
-    closeDialog()
-    window.location.reload()
+    return
   }
+
+  if (likeBlog) {
+    let res = await actions.addLike({
+      slug: props.slug,
+      email: data.email,
+      name: data.name,
+      createdAt: data.createdAt,
+    })
+    if (res.error) {
+      error.value = res.error.message
+      return
+    }
+  }
+
+  closeDialog()
+  window.location.reload()
 }
 
 const handleEsc = (e) => {
@@ -132,6 +149,25 @@ watch(comment, () => (error.value = null), { deep: true })
               id="createdAt"
               class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
             />
+          </div>
+          <div class="flex items-center">
+            <label
+              for="likeBlog"
+              class="flex cursor-pointer items-center text-gray-300"
+            >
+              <input
+                v-model="comment.likeBlog"
+                type="checkbox"
+                id="likeBlog"
+                class="hidden"
+              />
+              <Icon
+                :icon="comment.likeBlog ? 'mdi:heart' : 'mdi:heart-outline'"
+                class="mr-2 text-red-500"
+                :size="20"
+              />
+              Also like this blog post
+            </label>
           </div>
           <button
             type="submit"

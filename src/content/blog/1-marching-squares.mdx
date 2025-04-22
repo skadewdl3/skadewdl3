@@ -12,7 +12,9 @@ import Grid2 from '@blog-components/1-marching-squares/Grid2.vue'
 import Grid3 from '@blog-components/1-marching-squares/Grid3.vue'
 import Isolines from '@blog-components/1-marching-squares/Isolines.vue'
 import Cases from '@blog-components/1-marching-squares/Cases.vue'
+import Cases2 from '@blog-components/1-marching-squares/Cases2.vue'
 import Case from '@blog-components/1-marching-squares/Case.vue'
+import Case2 from '@blog-components/1-marching-squares/Case2.vue'
 import Accordion from '@components/Accordion.astro'
 
 
@@ -550,9 +552,97 @@ function marchingSquaresLookup(bottomLeft: Point, bottomRight: Point, topRight: 
 ```
 
 ## Marching Squares!
-Alright, now we're all prepped up and ready to implement Marching Squares. Here's the link to a [p5.js sketch](https://editor.p5js.org/skadewdle/sketches/c9x7BbAG1) for the same. Oh, and you might have already seen this - but here's the output of the sketch (yes it's the same animation as above but I'm really proud of it so here it is again).
 
-<Cases client:visible />
+#### Linear Interpolation
+Alright, now this is the final piece of our desired algorithm. You might notice in the animation above that at lower resolutions, the contours look blocky. This is because we're using *assuming* the curve contour passes through the midpoint of the edges of the square, however this might not be the case.
+
+We need some way to find a realistic approximation of where the contour lies on the edge. One approach is to use linear interpolation between the edge points. Given two points $A$ and $B$ on the edge, and a value $t$ between 0 and 1 representing the position along the edge, we can calculate the interpolated point $P$ as follows:
+
+
+$$
+P = A + t \cdot (B - A)
+$$
+
+Note that these points are 2D vectors, so this can also be written as
+
+$$
+P = \begin{bmatrix} x_A \\ y_A \end{bmatrix} + t \cdot \left( \begin{bmatrix} x_B \\ y_b \end{bmatrix} - \begin{bmatrix} x_B \\ y_B \end{bmatrix} \right)
+$$
+
+However for brevity, we'll continue using the vector notation.
+
+$t$ a.k.a *parameter* a.k.a. *blend factor* determines how **far** the interpolated point $P$ will be from A, and it uses some information from points $A$ and $B$ to do so. For our scalar field, $t$ is calculated based on the values of the scalar field at points $A$ and $B$.
+
+Let's consider the following variables:
+$$
+\begin{align*}
+v_A & = \text{Scalar field value at A} \\
+v_B & = \text{Scalar field value at B}\\
+v_{iso} & = \text{Isovalue}
+\end{align*}
+$$
+
+Referring back to our equation of an implicit function $f(x, y) = c$, remember that $c$ is our isovalue. Hence,
+
+$$
+\begin{align*}
+v_A & = f(x_A, y_A) \\
+v_B & = f(x_B, y_B) \\
+v_{iso} & = c
+\end{align*}
+$$
+
+Now, there can be five cases based on the values of $v_A$, $v_B$, and $v_{iso}$:
+
+
+##### **Case 1**: $v_A = v_b$
+If the scalar field values are equal, indicating that the isovalue passes through the midpoint of the edge connecting points A and B. Therefore,
+$$
+\begin{align*}
+P & = \frac{A + B}{2} \\
+& = (\frac{x_A + x_B}{2}, \frac{y_A + y_B}{2})
+\end{align*}
+$$
+
+##### **Case 1**: $v_A = v_iso$ or $v_B = v_iso$
+If the above case is false, and one of the scalar field values is the same as the isovalue - this means that the contour will pass through one of the points $A$ or $B$. Therefore, the interpolated point $P$ will be either $A$ or $B$.
+
+
+##### **Case 3**: $v_{iso} \in [v_A, v_B]$ or $v_{iso} \in [v_B, v_A]$
+If above cases are false, and the isovalue is in the range of the two scalar values, then we must perform actual interpolation. In this case, the point $P$ lies somewhere between $A$ and $B$. We can calculate the position of $P$ using linear interpolation:
+
+$$
+\begin{align*}
+P & = A +  t \cdot (B - A) \\
+& = A + \frac{v_{iso} - v_A}{v_B - v_A} (B - A) \\
+& = (x_A + \frac{v_{iso} - v_A}{v_B - v_A} (x_B - x_A), y_A + \frac{v_{iso} - v_A}{v_B - v_A} (y_B - y_A))
+\end{align*}
+$$
+
+Finally, if $v_{iso} \notin [v_A, v_B]$ and $v_{iso} \notin [v_B, v_A]$, it means the contour won't intersect with this edge at all, hence it can be safely ignored.
+
+After all that math, let's take a peek at the visualization of linear interpolation on a single grid square (for all edges)
+
+<Case2 client:visible caseNumber={3} />
+
+Try playing around with the scalar field values and the isovalue. Try doing the following:
+1. Setting both scalar values equal to each other
+2. Setting one of the corner values equal to the isovalue
+3. Setting the isovalue to be somewhere between the corner values
+4. Setting the isovalue to be more than both the corner values
+
+You'll be able to see the math we discussed in action. Now, let's implement this in Marching Squares to finally reach our goal.
+
+#### We're done! Yay!
+Here's the [final p5.js sketch](https://editor.p5js.org/skadewdle/sketches/Y1ZIIsgzB), which integrates linear interpolation with Marching Squares. You might have seen a similar animation like this previously in this article, but here it is again with linear interpolation (yes I'm very proud of it, thank you for noticing).
+
+Yeah, that's it - that's Marching Squares! Here's what the final implementation should look like. Try turning interpolation off - then on, you'll see that the interpolated contour looks so much smoother than the non-interpolated one.
+
+<Cases2 client:visible />
+
+
+
+## Conclusion
 
 #### Advantages
 
@@ -630,7 +720,7 @@ Dual Contouring improves upon traditional Marching Squares/Cubes by:
 This approach produces contours that better preserve the features of the original scalar field, particularly when the field contains sharp transitions.
 
 
-## Conclusion
+#### A word from me
 
 And there you have it - that's Marching Squares (well, at least the basics of it). When I learnt this algorithm, I had quite a rough journey understanding contours, isovalues and had to go through a lot of blog posts and videos (a lot of which you can find in the references).
 
