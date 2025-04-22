@@ -10,6 +10,7 @@ const CommentSchema = type({
   name: 'string > 1',
   email: 'string.email',
   message: 'string',
+  createdAt: 'string.date',
 })
 
 const error = ref(null)
@@ -28,6 +29,7 @@ const comment = ref({
   name: '',
   email: '',
   message: '',
+  createdAt: new Date().toISOString().split('T')[0], // Default to today's date
 })
 
 const closeDialog = () => {
@@ -120,6 +122,15 @@ watch(comment, () => (error.value = null), { deep: true })
               rows="4"
               class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
             ></textarea>
+          </div>
+          <div>
+            <label for="createdAt" class="mb-1 block text-gray-300">Date</label>
+            <input
+              v-model="comment.createdAt"
+              type="date"
+              id="createdAt"
+              class="w-full rounded border border-gray-700 bg-[#2a2a2a] p-2 text-gray-100 placeholder-gray-500 focus:border-gray-500 focus:ring-0"
+            />
           </div>
           <button
             type="submit"

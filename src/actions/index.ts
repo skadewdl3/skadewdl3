@@ -9,7 +9,7 @@ export const addComment = defineAction({
     name: z.string().min(1, 'Name is required'),
     email: z.string().email('Valid email is required'),
     message: z.string().min(1, 'Comment message is required'),
-    createdAt: z.date().optional().default(new Date()),
+    createdAt: z.coerce.date().optional().default(new Date()),
   }),
   async handler({ slug, name, email, message, createdAt }) {
     try {
