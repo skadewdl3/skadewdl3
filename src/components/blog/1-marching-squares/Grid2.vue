@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import P5Wrapper from '@/layouts/P5Wrapper.vue'
 import P5Sketch from '@/components/P5Sketch.vue'
+import { roundToNthDecimal } from '@/utils/math'
 
 const gridHighlight = ref(false)
 const radius = ref(5.1)
@@ -244,7 +245,7 @@ function draw() {
       <br />
       <div class="grid grid-cols-2 place-items-center">
         <div class="text-center">
-          <p>Radius</p>
+          <p>Radius = {{ roundToNthDecimal(radius, 2) }}</p>
           <input type="range" min="1" max="7" step="0.01" v-model="radius" />
         </div>
 

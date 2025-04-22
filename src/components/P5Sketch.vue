@@ -2,14 +2,15 @@
 import { onMounted, ref, watch, defineProps } from 'vue'
 import isDarkTheme from '@/utils/isDarkTheme'
 import { useDark } from '@vueuse/core'
+import P5Matrix from '@/utils/p5Matrix.ts'
 
 const root = ref(null)
 const element = ref<HTMLElement | null>(null)
 const load = ref(null)
-const props = defineProps(['setup', 'draw', 'aspectRatio', 'theme'])
+const props = defineProps(['setup', 'draw', 'aspectRatio', 'theme', 'preload'])
 const sketchInitialized = ref(false) // Added this since you were using it
 
-const { setup, draw, aspectRatio, theme } = props
+const { setup, draw, aspectRatio, theme, preload } = props
 
 const p5 = await import('p5')
 
@@ -29,7 +30,12 @@ onMounted(() => {
       sketch.text(...args)
       sketch.scale(1, -1)
     }
+
+    sketch.Matrix = P5Matrix
     sketch.darkTheme = theme
+
+    preload && preload(sketch)
+
     let p5Setup = () => setup(sketch, width, height)
     let p5Draw = draw
     sketch.setup = p5Setup

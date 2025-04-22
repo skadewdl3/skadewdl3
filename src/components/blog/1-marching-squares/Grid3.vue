@@ -2,8 +2,8 @@
 import { onMounted, ref, watch } from 'vue'
 import P5Wrapper from '@/layouts/P5Wrapper.vue'
 import P5Sketch from '@/components/P5Sketch.vue'
+import { roundToNthDecimal } from '@/utils/math'
 
-const gridHighlight = ref(false)
 const radius = ref(5.1)
 const discrete = ref(false)
 
@@ -17,6 +17,18 @@ let p: any
 const UNIT = 50
 const U = UNIT
 
+// Check if a point is inside the circle
+function isPointInsideCircle(
+  point: Point,
+  circleCenter: Point,
+  circleRadius: number
+): boolean {
+  const distSq =
+    (point.x - circleCenter.x) * (point.x - circleCenter.x) +
+    (point.y - circleCenter.y) * (point.y - circleCenter.y)
+  return distSq <= circleRadius * circleRadius
+}
+
 function drawGrid() {
   p.strokeWeight(0.2)
   p.stroke(150)
@@ -27,6 +39,7 @@ function drawGrid() {
 
   // Circle radius
   const circleRadius = radius.value * U // radius is half the diameter (10*U/2)
+  const circleCenter = { x: 0, y: 0 }
 
   // Draw vertical grid lines
   // Start from a multiple of U closest to the left edge
@@ -48,171 +61,51 @@ function drawGrid() {
     p.line(-p.width / 2, y, p.width / 2, y)
   }
 
-  // Highlight grid squares that intersect with the circle boundary
-  p.stroke(255, 0, 0)
-  p.fill(255, 0, 0, 50) // Semi-transparent red
+  // Draw grid points with 0/1 labels
+  p.strokeWeight(1)
+  const pointRadius = 15 // Size of the circles at grid points
 
-  // Go through each grid square
+  // Go through each grid point
   for (
     let x = -Math.floor(xLines / 2) * U;
-    x < Math.ceil(xLines / 2) * U;
+    x <= Math.ceil(xLines / 2) * U;
     x += U
   ) {
     for (
       let y = -Math.floor(yLines / 2) * U;
-      y < Math.ceil(yLines / 2) * U;
+      y <= Math.ceil(yLines / 2) * U;
       y += U
     ) {
-      // Check if this square intersects with the circle boundary
-      // We check if any corner of the square is inside the circle
-      // and any corner is outside (which indicates intersection)
-      const corners = [
-        { x: x, y: y },
-        { x: x + U, y: y },
-        { x: x, y: y + U },
-        { x: x + U, y: y + U },
-      ]
+      const point = { x, y }
+      const insideCircle = isPointInsideCircle(
+        point,
+        circleCenter,
+        circleRadius
+      )
 
-      let anyInside = false
-      let anyOutside = false
-
-      for (const corner of corners) {
-        const distSq = corner.x * corner.x + corner.y * corner.y
-        if (distSq <= circleRadius * circleRadius) {
-          anyInside = true
-        } else {
-          anyOutside = true
-        }
+      // Draw circle at grid point
+      if (insideCircle) {
+        // Purple fill for points inside the circle
+        p.stroke(100, 0, 128)
+        p.fill(128, 0, 255, 127)
+      } else {
+        // Transparent white for points outside the circle
+        p.stroke(150)
+        p.fill(255, 255, 255, 127)
       }
+      p.circle(x, y, pointRadius)
 
-      // If we have both inside and outside corners, the square intersects the circle
-      if (anyInside && anyOutside) {
-        p.rect(x, y, U, U)
-
-        if (!discrete.value) continue
-
-        // Find intersection points of the circle with the square's edges
-        const intersections = findCircleSquareIntersections(
-          { x: 0, y: 0 }, // Circle center
-          circleRadius,
-          { x, y }, // Square top-left
-          U // Square size
-        )
-
-        if (intersections.length >= 2) {
-          // Draw a line connecting the first two intersection points
-          p.strokeWeight(2)
-          p.stroke(0, 0, 255) // Blue line for intersections
-          p.line(
-            intersections[0].x,
-            intersections[0].y,
-            intersections[1].x,
-            intersections[1].y
-          )
-          p.strokeWeight(0.2)
-          p.stroke(255, 0, 0)
-        }
-      }
+      // Add 0/1 label with contrasting colors
+      p.fill(insideCircle ? 255 : 0)
+      p.strokeWeight(0)
+      p.push()
+      p.scale(1, -1) // Flip text to be readable
+      p.textAlign(p.CENTER, p.CENTER)
+      p.textSize(12)
+      p.text(insideCircle ? '1' : '0', x, -y)
+      p.pop()
+      p.strokeWeight(1)
     }
-  }
-}
-
-// Helper function to find intersections between a circle and a square
-function findCircleSquareIntersections(
-  circleCenter: Point,
-  radius: number,
-  squareTopLeft: Point,
-  squareSize: number
-): Point[] {
-  const intersections: Point[] = []
-
-  // Check each edge of the square for intersections with the circle
-
-  // Bottom edge: y = squareTopLeft.y, x from squareTopLeft.x to squareTopLeft.x + squareSize
-  findCircleLineIntersections(
-    circleCenter,
-    radius,
-    { x: squareTopLeft.x, y: squareTopLeft.y },
-    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y },
-    intersections
-  )
-
-  // Right edge: x = squareTopLeft.x + squareSize, y from squareTopLeft.y to squareTopLeft.y + squareSize
-  findCircleLineIntersections(
-    circleCenter,
-    radius,
-    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y },
-    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y + squareSize },
-    intersections
-  )
-
-  // Top edge: y = squareTopLeft.y + squareSize, x from squareTopLeft.x to squareTopLeft.x + squareSize
-  findCircleLineIntersections(
-    circleCenter,
-    radius,
-    { x: squareTopLeft.x, y: squareTopLeft.y + squareSize },
-    { x: squareTopLeft.x + squareSize, y: squareTopLeft.y + squareSize },
-    intersections
-  )
-
-  // Left edge: x = squareTopLeft.x, y from squareTopLeft.y to squareTopLeft.y + squareSize
-  findCircleLineIntersections(
-    circleCenter,
-    radius,
-    { x: squareTopLeft.x, y: squareTopLeft.y },
-    { x: squareTopLeft.x, y: squareTopLeft.y + squareSize },
-    intersections
-  )
-
-  return intersections
-}
-
-// Find intersections between a circle and a line segment
-function findCircleLineIntersections(
-  circleCenter: Point,
-  radius: number,
-  lineStart: Point,
-  lineEnd: Point,
-  intersections: Point[]
-): void {
-  // Convert line to parametric form: point = start + t * (end - start)
-  const dx = lineEnd.x - lineStart.x
-  const dy = lineEnd.y - lineStart.y
-
-  // Solve quadratic equation for t at intersection points
-  const a = dx * dx + dy * dy
-  const b =
-    2 *
-    (dx * (lineStart.x - circleCenter.x) + dy * (lineStart.y - circleCenter.y))
-  const c =
-    (lineStart.x - circleCenter.x) * (lineStart.x - circleCenter.x) +
-    (lineStart.y - circleCenter.y) * (lineStart.y - circleCenter.y) -
-    radius * radius
-
-  const discriminant = b * b - 4 * a * c
-
-  if (discriminant < 0) {
-    // No intersections
-    return
-  }
-
-  // We have intersection(s)
-  const t1 = (-b + Math.sqrt(discriminant)) / (2 * a)
-  const t2 = (-b - Math.sqrt(discriminant)) / (2 * a)
-
-  // Check if intersection point is on the line segment (t in [0, 1])
-  if (t1 >= 0 && t1 <= 1) {
-    intersections.push({
-      x: lineStart.x + t1 * dx,
-      y: lineStart.y + t1 * dy,
-    })
-  }
-
-  if (t2 >= 0 && t2 <= 1) {
-    intersections.push({
-      x: lineStart.x + t2 * dx,
-      y: lineStart.y + t2 * dy,
-    })
   }
 }
 
@@ -227,12 +120,14 @@ function draw() {
   p.background(p.darkTheme ? 20 : 233)
 
   drawGrid()
-  p.stroke(255, 0, 0)
-  p.strokeWeight(2)
 
-  p.fill(255, 0, 0, 0)
-  p.stroke(p.darkTheme ? 100 : 156)
-  if (!discrete.value) p.circle(0, 0, radius.value * 2 * U)
+  // Draw the circle outline
+  if (!discrete.value) {
+    p.stroke(p.darkTheme ? 100 : 156)
+    p.strokeWeight(2)
+    p.fill(255, 0, 0, 0)
+    p.circle(0, 0, radius.value * 2 * U)
+  }
 }
 </script>
 
@@ -244,7 +139,7 @@ function draw() {
       <br />
       <div class="grid grid-cols-2 place-items-center">
         <div class="text-center">
-          <p>Radius</p>
+          <p>Radius = {{ roundToNthDecimal(radius, 2) }}</p>
           <input type="range" min="1" max="7" step="0.01" v-model="radius" />
         </div>
 

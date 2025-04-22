@@ -16,6 +16,7 @@ watch(isDark, () => {
 const { setup, draw, aspectRatio } = defineProps([
   'setup',
   'draw',
+  'preload',
   'aspectRatio',
 ])
 
@@ -45,6 +46,7 @@ let unwatch = watch(loading, () => {
         :aspectRatio="aspectRatio"
         :setup="setup"
         :draw="draw"
+        :preload="preload"
         :theme="isDark"
         ref="element"
       />

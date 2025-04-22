@@ -10,25 +10,22 @@ import remarkToc from 'remark-toc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 
-import db from '@astrojs/db';
+import db from '@astrojs/db'
 
-import vercel from '@astrojs/vercel';
+import vercel from '@astrojs/vercel'
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://example.com',
 
-  integrations: [mdx(), sitemap(), tailwind(), vue(), remarkEleventyImage(), {
-    name: 'custom-client-directives',
-    hooks: {
-      'astro:config:setup': ({ addClientDirective }) => {
-        addClientDirective({
-          name: 'visible-only',
-          entrypoint: './src/directives/visible-only.js',
-        })
-      },
-    },
-  }, db()],
+  integrations: [
+    mdx(),
+    sitemap(),
+    tailwind(),
+    vue(),
+    remarkEleventyImage(),
+    db(),
+  ],
 
   vite: {
     ssr: {

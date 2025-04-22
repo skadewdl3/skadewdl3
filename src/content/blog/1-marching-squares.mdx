@@ -9,6 +9,7 @@ import Sinx from '@blog-components/1-marching-squares/Sinx.vue'
 import Grid from '@blog-components/1-marching-squares/Grid.vue'
 import Grid2 from '@blog-components/1-marching-squares/Grid2.vue'
 import Grid3 from '@blog-components/1-marching-squares/Grid3.vue'
+import Isolines from '@blog-components/1-marching-squares/Isolines.vue'
 import Accordion from '@components/Accordion.astro'
 
 
@@ -276,7 +277,55 @@ Let us shed our pechant for calculating exact intersection points, and embrace s
 
 For the sake of exploration, let us assign a value of **1** to every point inside the curve, and a value of **0** to every point outside the curve. Let us mark these points accordingly.
 
-<Grid2 client:visible />
+<Grid3 client:visible />
+
+To check whether the point is inside the circle, we can simply use this piece of code:
+```ts
+function isPointInsideCircle(
+  point: Point,
+  circleCenter: Point,
+  circleRadius: number
+): boolean {
+  const distSq =
+    (point.x - circleCenter.x) * (point.x - circleCenter.x) +
+    (point.y - circleCenter.y) * (point.y - circleCenter.y)
+  return distSq <= circleRadius * circleRadius
+}
+```
+
+This calculates the distance of the given point from the center of the circle, and checks if it is less than or equal to the radius squared. However, this can be done in a generalized way for any function. Conside some implicit function of the form $f(x, y) = c$.
+$$
+\therefore f(x, y) - c = 0
+$$
+
+And we can mark every point as follows:
+$$
+\begin{cases}
+  \text{Inside} & \text{if } f(x, y) - c < 0 \\
+  \text{Outside} & \text{if } f(x, y) - c > 0 \\
+  \text{On} & \text{if } f(x, y) - c = 0
+\end{cases}
+$$
+
+Now while we've been toying around with the math about contours for a bit, let's take a more serious look at it. This process of marking 1's and 0's "inside" or "outside" is the process of creating a scalar field. The value at each point tells us whether that point is inside or outside our shape.
+
+The boundary of our shape — in this case, is where the value transitions from 1 to 0. This boundary is called an isoline or contour line, and it represents all points where the function equals some constant value (like the radius of our circle).
+
+This constant value can be anything. In the real world, it is often something like temperature, pressure or elevation. For example, here's a map of contour lines representing elevation:
+
+<img src="https://scalgo-web.imgix.net/documentation/Screenshot-from-2022-11-08-16-47-51.png?auto=compress%2Cformat&crop=focalpoint&cs=srgb&fit=crop&fp-x=0.5&fp-y=0.5&h=567&q=80&w=644&s=9666ff8020c14dbbcf786108233f34e8" style="margin: 50px auto;" />
+
+Everyline "isoline" in this image connects places with the exact same elevation. In the same way. The elevation at any particular isoline is called the isovalue. Take a look at the visualization below - it shows a circle at different isovalues.
+
+<Isolines client:visible />
+
+In the general case, when we have a function $f(x, y) = c$, the constant c is called the **isovalue**. The isoline represents all the points where the function equals exactly this isovalue. For our circle example, the isoline is where $x^2 + y^2 = r^2$, so $r^2$ is our isovalue.
+
+By tracking where values change from inside to outside across grid cells, we can approximate where the isoline passes through. This is the fundamental idea behind the Marching Squares algorithm - we're "marching" through squares in our grid, checking the configuration of inside/outside points, and drawing line segments to approximate the isoline.
+
+What makes this approach powerful is that we're no longer limited to shapes with analytical solutions. Whether we're dealing with a circle, a complex mathematical function, or even terrain data from a height map, we can use the same algorithm to extract meaningful contours.
+
+Let's extend this to visualize multiple isolines at different values. Rather than just binary inside/outside, we could assign a continuous range of scalar values to our field and extract multiple contour lines at different isovalues. This is exactly how topographic maps work - each contour line represents points of equal elevation.
 
 #### How to calculate contour lines?
 
