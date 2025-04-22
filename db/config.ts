@@ -8,6 +8,8 @@ const Comment = defineTable({
     email: column.text(),
     message: column.text(),
     createdAt: column.date({ default: new Date() }),
+    likes: column.number({ default: 0 }),
+    replies: column.json({ default: [] }),
   },
 })
 

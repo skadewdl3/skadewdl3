@@ -30,7 +30,7 @@ let likes = numbro(likesCount).format({ average: true })
 <div class="flex items-center justify-between">
   <h1>{likes} {likesCount > 1 ? 'people' : 'person'} liked this post</h1>
   <button
-    class="like-btn flex items-center justify-center gap-2 rounded text-gray-800 transition-colors hover:underline dark:text-gray-200"
+    class="like-btn flex items-center justify-center gap-2 rounded text-gray-800 transition-colors hover:text-red-500 dark:text-gray-200 dark:hover:text-red-400"
   >
     <Icon name="mdi:heart" size={20} />
     <span> Like </span>
@@ -53,8 +53,20 @@ let likes = numbro(likesCount).format({ average: true })
         <div
           class={`p-4 ${index > 0 ? 'mt-4 border-t border-gray-200 px-4 pb-4 pt-4 dark:border-neutral-700' : ''}`}
         >
-          <div class="font-bold text-gray-900 dark:text-gray-100">
-            {comment.name}
+          <div class="flex items-center justify-between">
+            <div class="font-bold text-gray-900 dark:text-gray-100">
+              {comment.name}
+            </div>
+            <div class="mt-6 flex flex-col items-end justify-end gap-2">
+              <button class="comment-like-btn flex items-center gap-1 text-sm text-gray-600 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400">
+                <Icon name="mdi:heart" size={16} />
+                <span>Like</span>
+              </button>
+              <button class="comment-reply-btn flex cursor-pointer items-center gap-1 text-sm text-gray-600 hover:underline dark:text-gray-400">
+                <Icon name="mdi:reply" size={16} />
+                <span>Reply</span>
+              </button>
+            </div>
           </div>
           <div class="text-sm text-gray-600 dark:text-gray-400">
             {comment.createdAt.toLocaleDateString()}
